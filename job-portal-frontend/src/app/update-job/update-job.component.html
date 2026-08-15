@@ -1,0 +1,77 @@
+<div class="update-job-container">
+
+  <h1>Update Job</h1>
+
+  <p *ngIf="message" class="success">
+    {{ message }}
+  </p>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <form (ngSubmit)="updateJob()">
+
+    <label>Job Title</label>
+    <input
+      type="text"
+      name="title"
+      [(ngModel)]="job.title"
+      required
+    >
+
+    <label>Company</label>
+    <input
+      type="text"
+      name="company"
+      [(ngModel)]="job.company"
+      required
+    >
+
+    <label>Location</label>
+    <input
+      type="text"
+      name="location"
+      [(ngModel)]="job.location"
+      required
+    >
+
+    <label>Salary</label>
+    <input
+      type="text"
+      name="salary"
+      [(ngModel)]="job.salary"
+      required
+    >
+
+    <label>Job Type</label>
+    <input
+      type="text"
+      name="jobType"
+      [(ngModel)]="job.jobType"
+      required
+    >
+
+    <label>Description</label>
+    <textarea
+      name="description"
+      [(ngModel)]="job.description"
+      required
+    ></textarea>
+
+    <label>Skills</label>
+    <input
+      type="text"
+      name="skills"
+      [(ngModel)]="job.skills"
+      placeholder="Angular, TypeScript, HTML"
+      required
+    >
+
+    <button type="submit">
+      Update Job
+    </button>
+
+  </form>
+
+</div>

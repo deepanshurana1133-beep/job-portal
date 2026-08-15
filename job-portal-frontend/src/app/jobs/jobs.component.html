@@ -1,0 +1,39 @@
+<div class="jobs-container">
+
+  <h1>Available Jobs</h1>
+
+  <button [routerLink]="['/my-applications']">
+  My Applications
+</button>
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <div class="job-card" *ngFor="let job of jobs">
+
+    <h2>{{ job.title }}</h2>
+
+    <p><strong>Company:</strong> {{ job.company }}</p>
+
+    <p><strong>Location:</strong> {{ job.location }}</p>
+
+    <p><strong>Salary:</strong> {{ job.salary }}</p>
+
+    <p><strong>Job Type:</strong> {{ job.jobType }}</p>
+
+    <p><strong>Description:</strong> {{ job.description }}</p>
+
+    <p>
+      <strong>Skills:</strong>
+      {{ job.skills.join(', ') }}
+    </p>
+<button [routerLink]="['/jobs', job._id]">
+  View Details
+</button>
+    <button (click)="applyForJob(job._id)">
+  Apply Now
+</button>
+
+  </div>
+
+</div>

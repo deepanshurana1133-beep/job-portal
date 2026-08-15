@@ -1,0 +1,31 @@
+.recruiter-jobs-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.recruiter-jobs-container h1 {
+  margin-bottom: 30px;
+}
+
+.job-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.job-card button {
+  background: #14532d;
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.job-card button:hover {
+  background: #166534;
+}

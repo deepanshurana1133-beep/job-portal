@@ -1,0 +1,28 @@
+.dashboard-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.dashboard-container h1 {
+  margin-bottom: 30px;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.dashboard-actions button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #14532d;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.dashboard-actions button:hover {
+  background: #166534;
+}

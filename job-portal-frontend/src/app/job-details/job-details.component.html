@@ -1,0 +1,85 @@
+<div class="job-details-container">
+
+  <button
+    class="back-button"
+    (click)="goBack()"
+  >
+    ← Back to Jobs
+  </button>
+
+  <p *ngIf="loading">
+    Loading job details...
+  </p>
+
+  <p
+    *ngIf="errorMessage"
+    class="error-message"
+  >
+    {{ errorMessage }}
+  </p>
+
+  <div
+    *ngIf="job && !loading"
+    class="job-card"
+  >
+
+    <h1>{{ job.title }}</h1>
+
+    <p>
+      <strong>Company:</strong>
+      {{ job.company || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Location:</strong>
+      {{ job.location || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Description:</strong>
+      {{ job.description || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Salary:</strong>
+      {{ job.salary || 'N/A' }}
+    </p>
+
+    <hr>
+
+    <h2>Apply for this Job</h2>
+
+    <label for="resume">
+      Upload Resume (PDF)
+    </label>
+
+    <input
+      id="resume"
+      type="file"
+      accept="application/pdf"
+      (change)="onFileSelected($event)"
+    >
+
+    <p *ngIf="selectedFile">
+      Selected file:
+      <strong>{{ selectedFile.name }}</strong>
+    </p>
+
+    <button
+      class="apply-button"
+      (click)="applyForJob()"
+      [disabled]="applying"
+    >
+      {{ applying ? 'Applying...' : 'Apply Now' }}
+    </button>
+
+    <p
+      *ngIf="successMessage"
+      class="success-message"
+    >
+      {{ successMessage }}
+    </p>
+
+  </div>
+
+</div>

@@ -1,0 +1,83 @@
+<div class="create-job-container">
+
+  <h1>Create Job</h1>
+
+  <p *ngIf="message" class="success">
+    {{ message }}
+  </p>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <form (ngSubmit)="createJob()">
+
+    <label>Job Title</label>
+    <input
+      type="text"
+      name="title"
+      [(ngModel)]="job.title"
+      placeholder="Enter job title"
+      required
+    >
+
+    <label>Company</label>
+    <input
+      type="text"
+      name="company"
+      [(ngModel)]="job.company"
+      placeholder="Enter company name"
+      required
+    >
+
+    <label>Location</label>
+    <input
+      type="text"
+      name="location"
+      [(ngModel)]="job.location"
+      placeholder="Enter location"
+      required
+    >
+
+    <label>Salary</label>
+    <input
+      type="text"
+      name="salary"
+      [(ngModel)]="job.salary"
+      placeholder="Example: 6-10 LPA"
+      required
+    >
+
+    <label>Job Type</label>
+    <input
+      type="text"
+      name="jobType"
+      [(ngModel)]="job.jobType"
+      placeholder="Example: Full Time"
+      required
+    >
+
+    <label>Description</label>
+    <textarea
+      name="description"
+      [(ngModel)]="job.description"
+      placeholder="Enter job description"
+      required
+    ></textarea>
+
+    <label>Skills</label>
+    <input
+      type="text"
+      name="skills"
+      [(ngModel)]="job.skills"
+      placeholder="Example: Node.js, NestJS, MongoDB"
+      required
+    >
+
+    <button type="submit">
+      Create Job
+    </button>
+
+  </form>
+
+</div>

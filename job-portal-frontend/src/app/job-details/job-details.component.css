@@ -1,0 +1,48 @@
+.job-details-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.job-details {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-details h1 {
+  margin-bottom: 5px;
+}
+
+.job-details h3 {
+  margin-top: 0;
+}
+
+.job-details p {
+  margin: 12px 0;
+}
+
+.skill {
+  display: inline-block;
+  padding: 6px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  background: #eee;
+}
+
+.job-details button {
+  margin-top: 25px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}

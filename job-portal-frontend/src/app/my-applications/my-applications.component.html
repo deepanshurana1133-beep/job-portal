@@ -1,0 +1,49 @@
+<div class="applications-container">
+
+  <h1>My Applications</h1>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <p *ngIf="!errorMessage && applications.length === 0">
+    No applications found.
+  </p>
+
+  <div
+    class="application-card"
+    *ngFor="let application of applications"
+  >
+
+    <h2>
+      {{ application.jobId?.title || 'Job' }}
+    </h2>
+
+    <p>
+      <strong>Company:</strong>
+      {{ application.jobId?.company || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Location:</strong>
+      {{ application.jobId?.location || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Resume:</strong>
+      {{ application.resume }}
+    </p>
+
+    <p>
+      <strong>Status:</strong>
+      {{ application.status }}
+    </p>
+
+    <p>
+      <strong>Applied On:</strong>
+      {{ application.createdAt | date:'medium' }}
+    </p>
+
+  </div>
+
+</div>

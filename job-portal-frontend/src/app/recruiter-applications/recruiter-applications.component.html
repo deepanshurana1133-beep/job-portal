@@ -1,0 +1,68 @@
+<div class="applications-container">
+
+  <h1>Applications</h1>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <p *ngIf="!errorMessage && applications.length === 0">
+    No applications found.
+  </p>
+
+  <div
+    class="application-card"
+    *ngFor="let application of applications"
+  >
+
+    <h2>{{ application.job?.title || 'Job' }}</h2>
+
+    <p>
+      <strong>Company:</strong>
+      {{ application.job?.company || 'N/A' }}
+    </p>
+
+    <p>
+      <strong>Applicant:</strong>
+      {{ application.user?.name || application.user?.email || 'N/A' }}
+    </p>
+
+    <p>
+  <strong>Resume:</strong>
+  {{ application.resume }}
+</p>
+
+<button
+  *ngIf="application.resume"
+  (click)="viewResume(application._id)"
+>
+  View Resume
+</button>
+
+    <p>
+      <strong>Status:</strong>
+      {{ application.status }}
+    </p>
+
+    <p>
+      <strong>Applied On:</strong>
+      {{ application.createdAt | date:'medium' }}
+    </p>
+
+    <button
+  (click)="updateStatus(application._id, 'Accepted')"
+  [disabled]="application.status === 'Accepted'"
+>
+  Accept
+</button>
+
+<button
+  (click)="updateStatus(application._id, 'Rejected')"
+  [disabled]="application.status === 'Rejected'"
+>
+  Reject
+</button>
+
+  </div>
+
+</div>
