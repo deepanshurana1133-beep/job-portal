@@ -6,7 +6,10 @@
     {{ errorMessage }}
   </p>
 
-  <p *ngIf="!errorMessage && applications.length === 0">
+  <p
+    *ngIf="!errorMessage && applications.length === 0"
+    class="no-applications"
+  >
     No applications found.
   </p>
 
@@ -30,19 +33,36 @@
     </p>
 
     <p>
-      <strong>Resume:</strong>
-      {{ application.resume }}
-    </p>
-
-    <p>
-      <strong>Status:</strong>
-      {{ application.status }}
-    </p>
-
-    <p>
       <strong>Applied On:</strong>
       {{ application.createdAt | date:'medium' }}
     </p>
+
+    <div class="status-section">
+
+      <strong>Application Status</strong>
+
+      <span
+        class="status-badge"
+        [ngClass]="{
+          'pending': application.status === 'Pending',
+          'accepted': application.status === 'Accepted',
+          'rejected': application.status === 'Rejected'
+        }"
+      >
+        <span *ngIf="application.status === 'Pending'">
+          🟡 Pending
+        </span>
+
+        <span *ngIf="application.status === 'Accepted'">
+          🟢 Accepted
+        </span>
+
+        <span *ngIf="application.status === 'Rejected'">
+          🔴 Rejected
+        </span>
+      </span>
+
+    </div>
 
   </div>
 

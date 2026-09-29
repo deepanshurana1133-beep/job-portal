@@ -1,67 +1,130 @@
 <div class="applications-container">
 
-  <h1>Applications</h1>
+  <div class="page-header">
 
-  <p *ngIf="errorMessage" class="error">
-    {{ errorMessage }}
-  </p>
-
-  <p *ngIf="!errorMessage && applications.length === 0">
-    No applications found.
-  </p>
-
-  <div
-    class="application-card"
-    *ngFor="let application of applications"
-  >
-
-    <h2>{{ application.job?.title || 'Job' }}</h2>
-
-    <p>
-      <strong>Company:</strong>
-      {{ application.job?.company || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Applicant:</strong>
-      {{ application.user?.name || application.user?.email || 'N/A' }}
-    </p>
-
-    <p>
-  <strong>Resume:</strong>
-  {{ application.resume }}
-</p>
-
-<button
-  *ngIf="application.resume"
-  (click)="viewResume(application._id)"
->
-  View Resume
-</button>
-
-    <p>
-      <strong>Status:</strong>
-      {{ application.status }}
-    </p>
-
-    <p>
-      <strong>Applied On:</strong>
-      {{ application.createdAt | date:'medium' }}
-    </p>
+    <div>
+      <h1>Applications</h1>
+      <p>Manage applications received for your jobs</p>
+    </div>
 
     <button
-  (click)="updateStatus(application._id, 'Accepted')"
-  [disabled]="application.status === 'Accepted'"
->
-  Accept
-</button>
+      class="back-btn"
+      (click)="backToDashboard()"
+    >
+      ← Dashboard
+    </button>
 
-<button
-  (click)="updateStatus(application._id, 'Rejected')"
-  [disabled]="application.status === 'Rejected'"
->
-  Reject
-</button>
+  </div>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message"
+  >
+    {{ successMessage }}
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    *ngIf="loading"
+    class="loading"
+  >
+    Loading applications...
+  </div>
+
+  <div
+    *ngIf="!loading && applications.length === 0"
+    class="no-applications"
+  >
+    <h2>No Applications Found</h2>
+
+    <p>
+      No applications have been received for your jobs yet.
+    </p>
+  </div>
+
+  <div
+    *ngIf="!loading && applications.length > 0"
+    class="applications-list"
+  >
+
+    <div
+      class="application-card"
+      *ngFor="let application of applications"
+    >
+
+      <div class="application-header">
+
+        <div>
+          <h2>
+            {{ application.jobId?.title || 'Job' }}
+          </h2>
+
+          <p class="company">
+            {{ application.jobId?.company || 'Company' }}
+          </p>
+        </div>
+
+        <span
+          class="status"
+          [ngClass]="{
+            'pending': application.status === 'Pending',
+            'accepted': application.status === 'Accepted',
+            'rejected': application.status === 'Rejected'
+          }"
+        >
+          {{ application.status }}
+        </span>
+
+      </div>
+
+      <div class="applicant-info">
+
+        <p>
+          <strong>Applicant:</strong>
+          {{ application.userId?.name || 'N/A' }}
+        </p>
+
+        <p>
+          <strong>Email:</strong>
+          {{ application.userId?.email || 'N/A' }}
+        </p>
+
+      </div>
+
+      <div class="application-actions">
+
+        <button
+          class="resume-btn"
+          (click)="viewResume(application._id)"
+        >
+          View Resume
+        </button>
+
+        <button
+          class="accept-btn"
+          *ngIf="application.status !== 'Accepted'"
+          (click)="updateStatus(application._id, 'Accepted')"
+        >
+          Accept
+        </button>
+
+        <button
+          class="reject-btn"
+          *ngIf="application.status !== 'Rejected'"
+          (click)="updateStatus(application._id, 'Rejected')"
+        >
+          Reject
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 

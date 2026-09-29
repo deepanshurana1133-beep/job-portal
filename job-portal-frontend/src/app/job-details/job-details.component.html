@@ -1,52 +1,68 @@
 <div class="job-details-container">
 
-  <button
-    class="back-button"
-    (click)="goBack()"
-  >
-    ← Back to Jobs
-  </button>
-
-  <p *ngIf="loading">
-    Loading job details...
-  </p>
-
+  <!-- Error Message -->
   <p
     *ngIf="errorMessage"
-    class="error-message"
+    class="error"
   >
     {{ errorMessage }}
   </p>
 
+  <!-- Success Message -->
+  <p
+    *ngIf="successMessage"
+    class="success"
+  >
+    {{ successMessage }}
+  </p>
+
+  <!-- Job Details -->
   <div
-    *ngIf="job && !loading"
-    class="job-card"
+    *ngIf="job"
+    class="job-details"
   >
 
     <h1>{{ job.title }}</h1>
 
-    <p>
-      <strong>Company:</strong>
-      {{ job.company || 'N/A' }}
-    </p>
+    <h3>{{ job.company }}</h3>
 
     <p>
       <strong>Location:</strong>
-      {{ job.location || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Description:</strong>
-      {{ job.description || 'N/A' }}
+      {{ job.location }}
     </p>
 
     <p>
       <strong>Salary:</strong>
-      {{ job.salary || 'N/A' }}
+      {{ job.salary }}
     </p>
+
+    <p>
+      <strong>Job Type:</strong>
+      {{ job.jobType }}
+    </p>
+
+    <div>
+      <strong>Description:</strong>
+
+      <p>
+        {{ job.description }}
+      </p>
+    </div>
+
+    <div>
+      <strong>Skills:</strong>
+
+      <span
+        class="skill"
+        *ngFor="let skill of job.skills"
+      >
+        {{ skill }}
+      </span>
+    </div>
 
     <hr>
 
+    <!-- Apply Section -->
     <h2>Apply for this Job</h2>
 
     <label for="resume">
@@ -60,25 +76,55 @@
       (change)="onFileSelected($event)"
     >
 
+    <!-- Selected File -->
     <p *ngIf="selectedFile">
+
       Selected file:
-      <strong>{{ selectedFile.name }}</strong>
+
+      <strong>
+        {{ selectedFile.name }}
+      </strong>
+
     </p>
 
+    <!-- Apply Button -->
     <button
-      class="apply-button"
       (click)="applyForJob()"
       [disabled]="applying"
     >
-      {{ applying ? 'Applying...' : 'Apply Now' }}
+      {{
+        applying
+          ? 'Applying...'
+          : 'Apply Now'
+      }}
     </button>
 
-    <p
-      *ngIf="successMessage"
-      class="success-message"
+    <!-- My Applications Button -->
+    <div
+      *ngIf="showMyApplicationsButton"
+      class="my-applications-section"
     >
-      {{ successMessage }}
-    </p>
+
+      <button
+        class="my-applications-btn"
+        (click)="viewMyApplications()"
+      >
+        View My Applications
+      </button>
+
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-section">
+
+      <button
+        class="back-btn"
+        (click)="goBack()"
+      >
+        ← Back to Jobs
+      </button>
+
+    </div>
 
   </div>
 

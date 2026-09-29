@@ -7,15 +7,23 @@ import {
   Post,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
+
+import {
+  FileInterceptor,
+} from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import * as fs from 'fs';
+
 import type { Request, Response } from 'express';
 import { ApplicationService } from './application.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
-import * as path from 'path';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 @Controller('applications')
 @UseGuards(JwtAuthGuard)
 export class ApplicationController {
@@ -26,10 +34,28 @@ export class ApplicationController {
   @Post()
 @UseInterceptors(
   FileInterceptor('resume', {
-    dest: './uploads/resumes',
+    storage: diskStorage({
+      destination: (req, file, callback) => {
+        const uploadPath = path.join(
+          process.cwd(),
+          'uploads',
+          'resumes',
+        );
+
+        fs.mkdirSync(uploadPath, { recursive: true });
+
+        callback(null, uploadPath);
+      },
+
+      filename: (req, file, callback) => {
+        const uniqueName =
+          `${Date.now()}-${file.originalname}`;
+
+        callback(null, uniqueName);
+      },
+    }),
 
     fileFilter: (req, file, callback) => {
-
       if (file.mimetype === 'application/pdf') {
         callback(null, true);
       } else {
@@ -43,7 +69,7 @@ export class ApplicationController {
 )
 applyForJob(
   @Body('jobId') jobId: string,
-  @UploadedFile() file: Express.Multer.File,
+  @UploadedFile() file: any,
   @Req() req: Request,
 ) {
   const user = req.user as {
@@ -58,7 +84,6 @@ applyForJob(
     file.filename,
   );
 }
-
   @Get('my')
   getMyApplications(@Req() req: Request) {
     const user = req.user as {
@@ -72,6 +97,8 @@ applyForJob(
     );
   }
   @Get('recruiter')
+@UseGuards(RolesGuard)
+@Roles('recruiter')
 getRecruiterApplications(@Req() req: Request) {
   const user = req.user as {
     userId: string;
@@ -84,38 +111,26 @@ getRecruiterApplications(@Req() req: Request) {
   );
 }
 @Get(':id/resume')
-async getResume(
+@UseGuards(RolesGuard)
+@Roles('recruiter')
+async viewResume(
   @Param('id') id: string,
+  @Req() req: Request,
   @Res() res: Response,
 ) {
-  const filename =
-    await this.applicationService.getApplicationResume(id);
+  const user = req.user as {
+    userId: string;
+    email: string;
+    role: string;
+  };
 
-  const filePath = path.join(
-    process.cwd(),
-    'uploads',
-    'resumes',
-    filename,
+  return this.applicationService.viewResume(
+    id,
+    user.userId,
+    user.role,
+    res,
   );
-
-  console.log('Resume file:', filePath);
-
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'inline');
-
-  return res.sendFile(filePath, (error) => {
-    if (error) {
-      console.error('Resume send error:', error);
-
-      if (!res.headersSent) {
-        res.status(404).json({
-          message: 'Resume file not found',
-        });
-      }
-    }
-  });
 }
-
   @Get(':id')
 getApplicationById(
   @Param('id') id: string,
@@ -134,6 +149,8 @@ getApplicationById(
 }
 
   @Patch(':id/status')
+@UseGuards(RolesGuard)
+@Roles('recruiter')
 updateStatus(
   @Param('id') id: string,
   @Body('status')

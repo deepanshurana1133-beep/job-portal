@@ -1,83 +1,145 @@
 <div class="create-job-container">
 
-  <h1>Create Job</h1>
+  <div class="form-card">
 
-  <p *ngIf="message" class="success">
-    {{ message }}
-  </p>
+    <div class="form-header">
+      <h1>Create New Job</h1>
+      <p>Post a new job opportunity for job seekers</p>
+    </div>
 
-  <p *ngIf="errorMessage" class="error">
-    {{ errorMessage }}
-  </p>
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
 
-  <form (ngSubmit)="createJob()">
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
 
-    <label>Job Title</label>
-    <input
-      type="text"
-      name="title"
-      [(ngModel)]="job.title"
-      placeholder="Enter job title"
-      required
-    >
+    <form (ngSubmit)="createJob()">
 
-    <label>Company</label>
-    <input
-      type="text"
-      name="company"
-      [(ngModel)]="job.company"
-      placeholder="Enter company name"
-      required
-    >
+      <!-- Job Title -->
+      <div class="form-group">
+        <label>Job Title</label>
 
-    <label>Location</label>
-    <input
-      type="text"
-      name="location"
-      [(ngModel)]="job.location"
-      placeholder="Enter location"
-      required
-    >
+        <input
+          type="text"
+          name="title"
+          [(ngModel)]="title"
+          placeholder="e.g. Full Stack Developer"
+        />
+      </div>
 
-    <label>Salary</label>
-    <input
-      type="text"
-      name="salary"
-      [(ngModel)]="job.salary"
-      placeholder="Example: 6-10 LPA"
-      required
-    >
+      <!-- Company + Location -->
+      <div class="form-row">
 
-    <label>Job Type</label>
-    <input
-      type="text"
-      name="jobType"
-      [(ngModel)]="job.jobType"
-      placeholder="Example: Full Time"
-      required
-    >
+        <div class="form-group">
+          <label>Company</label>
 
-    <label>Description</label>
-    <textarea
-      name="description"
-      [(ngModel)]="job.description"
-      placeholder="Enter job description"
-      required
-    ></textarea>
+          <input
+            type="text"
+            name="company"
+            [(ngModel)]="company"
+            placeholder="Company name"
+          />
+        </div>
 
-    <label>Skills</label>
-    <input
-      type="text"
-      name="skills"
-      [(ngModel)]="job.skills"
-      placeholder="Example: Node.js, NestJS, MongoDB"
-      required
-    >
+        <div class="form-group">
+          <label>Location</label>
 
-    <button type="submit">
-      Create Job
-    </button>
+          <input
+            type="text"
+            name="location"
+            [(ngModel)]="location"
+            placeholder="e.g. Delhi / Remote"
+          />
+        </div>
 
-  </form>
+      </div>
+
+      <!-- Salary + Job Type -->
+      <div class="form-row">
+
+        <div class="form-group">
+          <label>Salary</label>
+
+          <input
+            type="text"
+            name="salary"
+            [(ngModel)]="salary"
+            placeholder="e.g. ₹6 - ₹10 LPA"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Job Type</label>
+
+          <select
+            name="jobType"
+            [(ngModel)]="jobType"
+          >
+            <option value="">Select job type</option>
+            <option value="Full Time">Full Time</option>
+            <option value="Part Time">Part Time</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Skills -->
+      <div class="form-group">
+        <label>Skills</label>
+
+        <input
+          type="text"
+          name="skills"
+          [(ngModel)]="skills"
+          placeholder="e.g. Angular, React, Node.js, MongoDB"
+        />
+
+        <small>
+          Enter skills separated by commas.
+        </small>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>Job Description</label>
+
+        <textarea
+          name="description"
+          [(ngModel)]="description"
+          rows="6"
+          placeholder="Enter detailed job description..."
+        ></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="button-group">
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="create-btn"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Creating...' : 'Create Job' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
 
 </div>

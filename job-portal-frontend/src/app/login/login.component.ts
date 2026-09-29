@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -16,8 +15,7 @@ export class LoginComponent {
   password = '';
   errorMessage = '';
 
-  constructor(
-    private http: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router
   ) {}
 
@@ -33,22 +31,29 @@ export class LoginComponent {
       .post<any>('http://localhost:3000/auth/login', loginData)
       .subscribe({
         next: (response) => {
-          console.log('Login successful:', response);
-
-          localStorage.setItem(
-            'accessToken',
-            response.accessToken
-          );
-
-          this.router.navigate(['/jobs']);
-        },
-
+  console.log('Login successful:', response);
+localStorage.setItem(
+  'userRole',
+  response.user.role
+);
+  localStorage.setItem(
+    'accessToken',
+    response.accessToken
+  );
+if (response.user.role === 'recruiter') {
+  this.router.navigate(['/recruiter-dashboard']);
+} else {
+  this.router.navigate(['/jobs']);
+}
+},
         error: (error) => {
           console.error('Login error:', error);
-
           this.errorMessage =
             error.error?.message || 'Invalid email or password';
         }
       });
   }
+  goToRegister(): void {
+  this.router.navigate(['/register']);
+}
 }

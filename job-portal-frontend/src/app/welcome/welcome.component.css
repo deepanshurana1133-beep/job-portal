@@ -1,0 +1,141 @@
+.welcome-container {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-image:
+    linear-gradient(
+      rgba(8, 30, 60, 0.18),
+      rgba(8, 30, 60, 0.18)
+    ),
+    url('/job-portal-bg.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.welcome-card {
+  width: 100%;
+  max-width: 540px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  padding: 45px 40px;
+
+  border-radius: 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(8px);
+}
+
+.career-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
+}
+
+.welcome-card h1 {
+  margin: 0;
+
+  font-size: 38px;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  color: #172554;
+}
+
+.welcome-card h1 span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #2563eb;
+}
+
+.subtitle {
+  margin: 22px auto 32px;
+
+  max-width: 430px;
+
+  font-size: 17px;
+  line-height: 1.6;
+
+  color: #596579;
+}
+
+.get-started-btn {
+  width: 100%;
+  max-width: 320px;
+
+  border: none;
+
+  padding: 15px 25px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: white;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.3);
+
+  transition: all 0.25s ease;
+}
+
+.get-started-btn span {
+  margin-left: 10px;
+  font-size: 21px;
+}
+
+.get-started-btn:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 12px 25px rgba(37, 99, 235, 0.4);
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+  .welcome-container {
+    padding: 18px;
+  }
+
+  .welcome-card {
+    padding: 35px 25px;
+  }
+
+  .welcome-card h1 {
+    font-size: 30px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .get-started-btn {
+    font-size: 16px;
+  }
+}

@@ -1,57 +1,159 @@
 .create-job-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 25px;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #f5f7fb;
 }
 
-.create-job-container h1 {
-  margin-bottom: 25px;
+.form-card {
+  max-width: 850px;
+  margin: 0 auto;
+  background: white;
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
-.create-job-container form {
-  display: flex;
-  flex-direction: column;
+.form-header {
+  margin-bottom: 30px;
 }
 
-.create-job-container label {
-  margin-top: 15px;
-  margin-bottom: 6px;
+.form-header h1 {
+  margin: 0;
+  font-size: 30px;
+  color: #222;
+}
+
+.form-header p {
+  margin-top: 8px;
+  color: #666;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
   font-weight: 600;
+  color: #333;
 }
 
-.create-job-container input,
-.create-job-container textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d5d9e2;
+  border-radius: 8px;
   font-size: 15px;
+  outline: none;
+  font-family: inherit;
 }
 
-.create-job-container textarea {
-  min-height: 120px;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.form-group textarea {
   resize: vertical;
 }
 
-.create-job-container button {
-  margin-top: 25px;
-  padding: 11px;
-  background: #14532d;
-  color: white;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.button-group button {
+  padding: 12px 25px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 15px;
   cursor: pointer;
 }
 
-.create-job-container button:hover {
-  background: #166534;
+.cancel-btn {
+  background: #e9ecef;
+  color: #333;
 }
 
-.success {
-  color: green;
-  margin-bottom: 15px;
+.cancel-btn:hover {
+  background: #d6d8db;
 }
 
-.error {
-  color: red;
-  margin-bottom: 15px;
+.create-btn {
+  background: #007bff;
+  color: white;
+}
+
+.create-btn:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 700px) {
+
+  .create-job-container {
+    padding: 20px 10px;
+  }
+
+  .form-card {
+    padding: 25px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-header h1 {
+    font-size: 25px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+  .success-message {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  color: #777;
+}
+
+.create-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

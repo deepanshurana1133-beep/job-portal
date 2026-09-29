@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-recruiter-applications',
@@ -12,20 +13,26 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class RecruiterApplicationsComponent implements OnInit {
 
   applications: any[] = [];
+
+  loading = true;
   errorMessage = '';
+  successMessage = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    this.getRecruiterApplications();
+  ngOnInit(): void {
+    this.getApplications();
   }
 
-  getRecruiterApplications() {
-
+  getApplications(): void {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
-      this.errorMessage = 'Please login first';
+      this.errorMessage = 'Please login as a recruiter first.';
+      this.loading = false;
       return;
     }
 
@@ -33,105 +40,120 @@ export class RecruiterApplicationsComponent implements OnInit {
       Authorization: `Bearer ${token}`
     });
 
-    this.http.get<any[]>(
-      'http://localhost:3000/applications/recruiter',
-      { headers }
-    ).subscribe({
-      next: (response) => {
+    this.http
+      .get<any[]>(
+        'http://localhost:3000/applications/recruiter',
+        { headers }
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Recruiter Applications:', response);
 
-        console.log('Recruiter Applications:', response);
+          this.applications = response;
+          this.loading = false;
+        },
 
-        this.applications = response;
-      },
+        error: (error) => {
+          console.error('Applications error:', error);
 
-      error: (error) => {
+          this.errorMessage =
+            error.error?.message ||
+            'Applications load nahi ho pa rahi hain.';
 
-        console.error(
-          'Recruiter Applications error:',
-          error
-        );
+          this.loading = false;
+        }
+      });
+  }
 
-        this.errorMessage =
-          'Applications load nahi ho pa rahi hain';
-      }
+  updateStatus(
+    applicationId: string,
+    status: 'Accepted' | 'Rejected'
+  ): void {
+
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      this.errorMessage = 'Please login first.';
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
     });
-  }
-updateStatus(
-  applicationId: string,
-  status: 'Accepted' | 'Rejected'
-) {
 
-  const token = localStorage.getItem('accessToken');
+    const body = {
+      status: status
+    };
 
-  if (!token) {
-    this.errorMessage = 'Please login first';
-    return;
-  }
+    this.http
+      .patch(
+        `http://localhost:3000/applications/${applicationId}/status`,
+        body,
+        { headers }
+      )
+      .subscribe({
+        next: () => {
 
-  const headers = new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
+          this.successMessage =
+            `Application ${status.toLowerCase()} successfully.`;
 
-  this.http.patch(
-    `http://localhost:3000/applications/${applicationId}/status`,
-    { status },
-    { headers }
-  ).subscribe({
-    next: (response: any) => {
+          this.getApplications();
+        },
 
-      console.log('Application status updated:', response);
+        error: (error) => {
 
-      const application = this.applications.find(
-        app => app._id === applicationId
-      );
+          console.error('Status update error:', error);
 
-      if (application) {
-        application.status = status;
-      }
-    },
-
-    error: (error) => {
-
-      console.error(
-        'Update application status error:',
-        error
-      );
-
-      this.errorMessage =
-        'Application status update nahi ho pa raha hai';
-    }
-  });
-}
-viewResume(applicationId: string) {
-  const token = localStorage.getItem('accessToken');
-
-  if (!token) {
-    this.errorMessage = 'Please login first';
-    return;
+          this.errorMessage =
+            error.error?.message ||
+            'Application status update nahi ho paaya.';
+        }
+      });
   }
 
-  const headers = new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
+  viewResume(applicationId: string): void {
 
-  this.http.get(
-    `http://localhost:3000/applications/${applicationId}/resume`,
-    {
-      headers,
-      responseType: 'blob'
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      this.errorMessage = 'Please login first.';
+      return;
     }
-  ).subscribe({
-    next: (blob: Blob) => {
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    },
 
-    error: (error) => {
-      console.error('Resume view error:', error);
+    const url =
+      `http://localhost:3000/applications/${applicationId}/resume`;
 
-      this.errorMessage =
-        'Resume open nahi ho pa rahi hai';
-    }
-  });
-}
+    /*
+     * Resume endpoint protected hai, isliye token ke saath
+     * request bhej kar PDF browser me open karenge.
+     */
+
+    this.http
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob'
+      })
+      .subscribe({
+        next: (blob) => {
+
+          const fileURL = URL.createObjectURL(blob);
+
+          window.open(fileURL, '_blank');
+        },
+
+        error: (error) => {
+
+          console.error('Resume error:', error);
+
+          this.errorMessage =
+            'Resume open nahi ho pa raha hai.';
+        }
+      });
+  }
+
+  backToDashboard(): void {
+    this.router.navigate(['/recruiter-dashboard']);
+  }
 }

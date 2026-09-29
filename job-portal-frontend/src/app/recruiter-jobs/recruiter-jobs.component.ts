@@ -1,31 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-recruiter-jobs',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './recruiter-jobs.component.html',
   styleUrl: './recruiter-jobs.component.css'
 })
 export class RecruiterJobsComponent implements OnInit {
 
   jobs: any[] = [];
+  loading = true;
   errorMessage = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    this.getRecruiterJobs();
+  ngOnInit(): void {
+    this.getJobs();
   }
 
-  getRecruiterJobs() {
-
+  getJobs(): void {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
-      this.errorMessage = 'Please login first';
+      this.errorMessage = 'Please login first.';
+      this.loading = false;
       return;
     }
 
@@ -33,62 +38,63 @@ export class RecruiterJobsComponent implements OnInit {
       Authorization: `Bearer ${token}`
     });
 
-    this.http.get<any[]>(
-      'http://localhost:3000/jobs/recruiter',
-      { headers }
-    ).subscribe({
-      next: (response) => {
-        console.log('Recruiter Jobs:', response);
-        this.jobs = response;
-      },
-
-      error: (error) => {
-        console.error('Recruiter Jobs error:', error);
-        this.errorMessage = 'Jobs load nahi ho pa rahi hain';
-      }
-    });
-  }
-  deleteJob(jobId: string) {
-
-  const confirmDelete = confirm(
-    'Are you sure you want to delete this job?'
-  );
-
-  if (!confirmDelete) {
-    return;
+    this.http
+      .get<any[]>('http://localhost:3000/jobs', { headers })
+      .subscribe({
+        next: (response) => {
+          console.log('Jobs:', response);
+          this.jobs = response;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Jobs error:', error);
+          this.errorMessage =
+            error.error?.message || 'Jobs load nahi ho pa rahi hain.';
+          this.loading = false;
+        }
+      });
   }
 
-  const token = localStorage.getItem('accessToken');
-
-  if (!token) {
-    this.errorMessage = 'Please login first';
-    return;
+  createJob(): void {
+    this.router.navigate(['/create-job']);
   }
 
-  const headers = new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
+  backToDashboard(): void {
+    this.router.navigate(['/recruiter-dashboard']);
+  }
 
-  this.http.delete(
-    `http://localhost:3000/jobs/${jobId}`,
-    { headers }
-  ).subscribe({
-    next: () => {
+  deleteJob(jobId: string): void {
+    const token = localStorage.getItem('accessToken');
 
-      console.log('Job deleted successfully');
-
-      this.jobs = this.jobs.filter(
-        job => job._id !== jobId
-      );
-    },
-
-    error: (error) => {
-
-      console.error('Delete Job error:', error);
-
-      this.errorMessage =
-        'Job delete nahi ho pa rahi hai';
+    if (!token) {
+      this.errorMessage = 'Please login first.';
+      return;
     }
-  });
-}
+
+    const confirmDelete = confirm(
+      'Are you sure you want to delete this job?'
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    this.http
+      .delete(`http://localhost:3000/jobs/${jobId}`, { headers })
+      .subscribe({
+        next: () => {
+          alert('Job deleted successfully!');
+          this.getJobs();
+        },
+        error: (error) => {
+          console.error('Delete job error:', error);
+          this.errorMessage =
+            error.error?.message || 'Job delete nahi ho paayi.';
+        }
+      });
+  }
 }

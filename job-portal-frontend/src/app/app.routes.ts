@@ -4,16 +4,27 @@ import { JobsComponent } from './jobs/jobs.component';
 import { MyApplicationsComponent } from './my-applications/my-applications.component';
 import { JobDetailsComponent } from './job-details/job-details.component';
 import { RecruiterDashboardComponent } from './recruiter-dashboard/recruiter-dashboard.component';
-import { RecruiterJobsComponent } from './recruiter-jobs/recruiter-jobs.component';
 import { CreateJobComponent } from './create-job/create-job.component';
-import { UpdateJobComponent } from './update-job/update-job.component';
+import { RecruiterJobsComponent } from './recruiter-jobs/recruiter-jobs.component';
 import { RecruiterApplicationsComponent } from './recruiter-applications/recruiter-applications.component';
+import { authGuard } from './auth.guard';
+import { recruiterGuard } from './role.guard';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { RegisterComponent } from './register/register.component';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'welcome',
     pathMatch: 'full'
   },
+  {
+  path: 'welcome',
+  component: WelcomeComponent
+},
+{
+  path: 'register',
+  component: RegisterComponent
+},
   {
     path: 'login',
     component: LoginComponent
@@ -27,27 +38,27 @@ export const routes: Routes = [
   component: MyApplicationsComponent
 },
 {
-  path: 'jobs/:id',
-  component: JobDetailsComponent
-},
-{
   path: 'recruiter-dashboard',
-  component: RecruiterDashboardComponent
-},
-{
-  path: 'recruiter-jobs',
-  component: RecruiterJobsComponent
+  component: RecruiterDashboardComponent,
+  canActivate: [authGuard, recruiterGuard]
 },
 {
   path: 'create-job',
-  component: CreateJobComponent
+  component: CreateJobComponent,
+  canActivate: [authGuard, recruiterGuard]
 },
 {
-  path: 'update-job/:id',
-  component: UpdateJobComponent
+  path: 'recruiter-jobs',
+  component: RecruiterJobsComponent,
+  canActivate: [authGuard, recruiterGuard]
 },
 {
   path: 'recruiter-applications',
-  component: RecruiterApplicationsComponent
+  component: RecruiterApplicationsComponent,
+  canActivate: [authGuard, recruiterGuard]
+},
+{
+  path: 'jobs/:id',
+  component: JobDetailsComponent
 }
 ];

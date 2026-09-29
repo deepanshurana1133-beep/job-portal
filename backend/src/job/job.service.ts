@@ -36,9 +36,4 @@ async updateJob(id: string, updateJobDto: any) {
 async deleteJob(id: string) {
   return this.jobModel.findByIdAndDelete(id);
 }
-async getRecruiterJobs(recruiterId: string) {
-  return this.jobModel
-    .find({ recruiterId })
-    .sort({ createdAt: -1 });
-}
 }

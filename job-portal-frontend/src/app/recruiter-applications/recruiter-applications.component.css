@@ -1,36 +1,204 @@
 .applications-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+  min-height: 100vh;
+  padding: 40px;
+  background: #f5f7fb;
 }
 
-.applications-container h1 {
-  margin-bottom: 30px;
+.page-header {
+  max-width: 1100px;
+  margin: 0 auto 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #222;
+}
+
+.page-header p {
+  margin-top: 8px;
+  color: #666;
+}
+
+.back-btn {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #e9ecef;
+  color: #333;
+  cursor: pointer;
+}
+
+.success-message,
+.error-message {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 12px 15px;
+  border-radius: 8px;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  margin-top: 40px;
+}
+
+.no-applications {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.no-applications h2 {
+  color: #222;
+}
+
+.no-applications p {
+  color: #666;
+}
+
+.applications-list {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
 }
 
 .application-card {
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 25px;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-.application-card button {
-  background: #14532d;
-  color: white;
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.application-header h2 {
+  margin: 0;
+  color: #222;
+}
+
+.company {
+  margin-top: 6px;
+  color: #666;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.accepted {
+  background: #d4edda;
+  color: #155724;
+}
+
+.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.applicant-info {
+  margin-top: 18px;
+}
+
+.applicant-info p {
+  color: #555;
+}
+
+.application-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.application-actions button {
+  padding: 9px 15px;
   border: none;
-  padding: 9px 16px;
-  border-radius: 6px;
+  border-radius: 7px;
+  color: white;
   cursor: pointer;
-  margin-right: 10px;
-  margin-top: 10px;
 }
 
-.application-card button:hover {
-  background: #166534;
+.resume-btn {
+  background: #007bff;
 }
 
-.error {
-  color: red;
+.resume-btn:hover {
+  background: #0056b3;
+}
+
+.accept-btn {
+  background: #28a745;
+}
+
+.accept-btn:hover {
+  background: #1e7e34;
+}
+
+.reject-btn {
+  background: #dc3545;
+}
+
+.reject-btn:hover {
+  background: #b02a37;
+}
+
+@media (max-width: 800px) {
+
+  .applications-container {
+    padding: 20px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .applications-list {
+    grid-template-columns: 1fr;
+  }
+
+  .application-actions {
+    flex-wrap: wrap;
+  }
 }

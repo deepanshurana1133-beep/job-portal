@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
 @Component({
   selector: 'app-job-details',
@@ -13,11 +16,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class JobDetailsComponent implements OnInit {
 
   job: any = null;
+
   selectedFile: File | null = null;
 
   loading = true;
   applying = false;
+
   successMessage = '';
+  showMyApplicationsButton = false;
   errorMessage = '';
 
   constructor(
@@ -27,7 +33,9 @@ export class JobDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const jobId = this.route.snapshot.paramMap.get('id');
+
+    const jobId =
+      this.route.snapshot.paramMap.get('id');
 
     if (!jobId) {
       this.errorMessage = 'Job ID not found';
@@ -39,31 +47,47 @@ export class JobDetailsComponent implements OnInit {
   }
 
   getJob(jobId: string): void {
+
     this.http
-      .get<any>(`http://localhost:3000/jobs/${jobId}`)
+      .get<any>(
+        `http://localhost:3000/jobs/${jobId}`
+      )
       .subscribe({
+
         next: (response) => {
+
           console.log('Job details:', response);
 
           this.job = response;
+
           this.loading = false;
         },
 
         error: (error) => {
-          console.error('Job details error:', error);
+
+          console.error(
+            'Job details error:',
+            error
+          );
 
           this.errorMessage =
             'Job details load nahi ho pa rahi hain';
 
           this.loading = false;
         }
+
       });
   }
 
   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
 
-    if (!input.files || input.files.length === 0) {
+    const input =
+      event.target as HTMLInputElement;
+
+    if (
+      !input.files ||
+      input.files.length === 0
+    ) {
       this.selectedFile = null;
       return;
     }
@@ -71,33 +95,50 @@ export class JobDetailsComponent implements OnInit {
     const file = input.files[0];
 
     if (file.type !== 'application/pdf') {
-      this.errorMessage = 'Only PDF files are allowed';
+
+      this.errorMessage =
+        'Only PDF files are allowed';
+
       this.selectedFile = null;
+
       return;
     }
 
     this.errorMessage = '';
+
     this.selectedFile = file;
   }
 
   applyForJob(): void {
+
     this.successMessage = '';
     this.errorMessage = '';
+    this.showMyApplicationsButton = false;
 
-    const token = localStorage.getItem('accessToken');
+    const token =
+      localStorage.getItem('accessToken');
 
     if (!token) {
-      this.errorMessage = 'Please login first';
+
+      this.errorMessage =
+        'Please login first';
+
       return;
     }
 
     if (!this.job?._id) {
-      this.errorMessage = 'Job ID not found';
+
+      this.errorMessage =
+        'Job ID not found';
+
       return;
     }
 
     if (!this.selectedFile) {
-      this.errorMessage = 'Please select your resume PDF';
+
+      this.errorMessage =
+        'Please select your resume PDF';
+
       return;
     }
 
@@ -105,12 +146,21 @@ export class JobDetailsComponent implements OnInit {
 
     const formData = new FormData();
 
-    formData.append('jobId', this.job._id);
-    formData.append('resume', this.selectedFile);
+    formData.append(
+      'jobId',
+      this.job._id
+    );
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
+    formData.append(
+      'resume',
+      this.selectedFile
+    );
+
+    const headers =
+      new HttpHeaders({
+        Authorization:
+          `Bearer ${token}`
+      });
 
     this.http
       .post(
@@ -119,17 +169,28 @@ export class JobDetailsComponent implements OnInit {
         { headers }
       )
       .subscribe({
+
         next: (response) => {
-          console.log('Application successful:', response);
+
+          console.log(
+            'Application successful:',
+            response
+          );
 
           this.successMessage =
             'Application submitted successfully!';
+
+          this.showMyApplicationsButton = true;
 
           this.applying = false;
         },
 
         error: (error) => {
-          console.error('Application error:', error);
+
+          console.error(
+            'Application error:',
+            error
+          );
 
           this.errorMessage =
             error.error?.message ||
@@ -137,10 +198,20 @@ export class JobDetailsComponent implements OnInit {
 
           this.applying = false;
         }
+
       });
   }
 
-  goBack(): void {
-    this.router.navigate(['/jobs']);
+  viewMyApplications(): void {
+
+    this.router.navigate(['/my-applications']);
+
   }
+
+  goBack(): void {
+
+    this.router.navigate(['/jobs']);
+
+  }
+
 }

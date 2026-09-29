@@ -1,21 +1,41 @@
 <div class="dashboard-container">
 
-  <h1>Recruiter Dashboard</h1>
+  <div class="dashboard-header">
+    <div>
+      <h1>Recruiter Dashboard</h1>
+      <p>Manage your jobs and applications</p>
+    </div>
 
-  <div class="dashboard-actions">
- <button [routerLink]="['/recruiter-jobs']">
-  My Jobs
-</button>
-   
-
-    <button [routerLink]="['/recruiter-applications']">
-  Applications
-</button>
-    
-
-    <button [routerLink]="['/create-job']">
-  Create Job
+    <button class="logout-btn" (click)="logout()">
+      Logout
     </button>
+  </div>
+
+  <div class="dashboard-cards">
+
+    <div class="dashboard-card">
+      <h2>Create Job</h2>
+      <p>Create and publish a new job opportunity.</p>
+      <button (click)="createJob()">
+        Create Job
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>My Jobs</h2>
+      <p>View and manage the jobs you have posted.</p>
+      <button (click)="viewJobs()">
+        View Jobs
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Applications</h2>
+      <p>View applications received for your jobs.</p>
+      <button (click)="viewApplications()">
+        View Applications
+      </button>
+    </div>
 
   </div>
 

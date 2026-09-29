@@ -10,13 +10,18 @@ import {
   Application,
   ApplicationDocument,
 } from './schemas/application.schema';
-
+import { Response } from 'express';
+import * as path from 'path';
+import * as fs from 'fs';
+import { EmailService } from '../email/email.service';
 @Injectable()
 export class ApplicationService {
-  constructor(
-    @InjectModel(Application.name)
-    private applicationModel: Model<ApplicationDocument>,
-  ) {}
+ constructor(
+  @InjectModel(Application.name)
+  private applicationModel: Model<ApplicationDocument>,
+
+  private emailService: EmailService,
+) {}
 
   async applyForJob(
     jobId: string,
@@ -49,6 +54,7 @@ export class ApplicationService {
       userId: new Types.ObjectId(userId),
     })
     .populate('jobId')
+    .populate('userId')
     .exec();
 
   if (!application) {
@@ -73,6 +79,7 @@ export class ApplicationService {
   const application = await this.applicationModel
     .findById(id)
     .populate('jobId')
+    .populate('userId')
     .exec();
 
   if (!application) {
@@ -89,7 +96,23 @@ export class ApplicationService {
 
   application.status = status;
 
-  return application.save();
+  const savedApplication = await application.save();
+
+  const user = application.userId as any;
+
+  if (
+    (status === 'Accepted' || status === 'Rejected') &&
+    user?.email &&
+    job?.title
+  ) {
+    await this.emailService.sendApplicationStatusEmail(
+      user.email,
+      job.title,
+      status,
+    );
+  }
+
+  return savedApplication;
 }
 async getRecruiterApplications(recruiterId: string) {
   const applications = await this.applicationModel
@@ -109,15 +132,66 @@ async getRecruiterApplications(recruiterId: string) {
     (application) => application.jobId !== null,
   );
 }
-async getApplicationResume(id: string) {
+async viewResume(
+  id: string,
+  userId: string,
+  role: string,
+  res: Response,
+) {
   const application = await this.applicationModel
     .findById(id)
+    .populate('jobId')
     .exec();
 
   if (!application) {
     throw new NotFoundException('Application not found');
   }
 
-  return application.resume;
+  const job = application.jobId as any;
+
+  // Recruiter can view only applications for their own jobs
+  if (
+    role === 'recruiter' &&
+    job.recruiterId.toString() !== userId
+  ) {
+    throw new UnauthorizedException(
+      'You can only view resumes for your own jobs',
+    );
+  }
+
+  const filePath = path.join(
+    process.cwd(),
+    'uploads',
+    'resumes',
+    application.resume,
+  );
+
+  if (!fs.existsSync(filePath)) {
+    throw new NotFoundException(
+      'Resume file not found',
+    );
+  }
+
+  res.setHeader(
+    'Content-Type',
+    'application/pdf',
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    'inline',
+  );
+
+  return res.sendFile(
+    filePath,
+    (error) => {
+      if (error) {
+        console.error(
+          'Resume send error:',
+          error,
+        );
+      }
+    },
+  );
 }
 }

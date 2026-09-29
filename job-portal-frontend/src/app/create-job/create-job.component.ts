@@ -13,18 +13,17 @@ import { Router } from '@angular/router';
 })
 export class CreateJobComponent {
 
-  job = {
-    title: '',
-    company: '',
-    location: '',
-    description: '',
-    salary: '',
-    jobType: '',
-    skills: ''
-  };
+  title = '';
+  company = '';
+  location = '';
+  salary = '';
+  jobType = '';
+  skills = '';
+  description = '';
 
-  message = '';
+  successMessage = '';
   errorMessage = '';
+  loading = false;
 
   constructor(
     private http: HttpClient,
@@ -32,59 +31,86 @@ export class CreateJobComponent {
   ) {}
 
   createJob() {
+    this.successMessage = '';
+    this.errorMessage = '';
 
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
-      this.errorMessage = 'Please login first';
+      this.errorMessage = 'Please login as a recruiter first.';
       return;
     }
+
+    if (
+      !this.title ||
+      !this.company ||
+      !this.location ||
+      !this.salary ||
+      !this.jobType ||
+      !this.skills ||
+      !this.description
+    ) {
+      this.errorMessage = 'Please fill all fields.';
+      return;
+    }
+
+    const jobData = {
+      title: this.title,
+      company: this.company,
+      location: this.location,
+      description: this.description,
+      salary: this.salary,
+      jobType: this.jobType,
+
+      // Backend ko string[] chahiye
+      skills: this.skills
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0)
+    };
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
 
-    const jobData = {
-      title: this.job.title,
-      company: this.job.company,
-      location: this.job.location,
-      description: this.job.description,
-      salary: this.job.salary,
-      jobType: this.job.jobType,
-      skills: this.job.skills
-        .split(',')
-        .map(skill => skill.trim())
-        .filter(skill => skill !== '')
-    };
+    this.loading = true;
 
-    this.http.post(
-      'http://localhost:3000/jobs',
-      jobData,
-      { headers }
-    ).subscribe({
-      next: (response) => {
-        console.log('Job created successfully:', response);
+    this.http
+      .post(
+        'http://localhost:3000/jobs',
+        jobData,
+        { headers }
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Job created successfully:', response);
 
-        this.message = 'Job created successfully!';
-        this.errorMessage = '';
+          this.loading = false;
+          this.successMessage = 'Job created successfully!';
 
-        this.job = {
-          title: '',
-          company: '',
-          location: '',
-          description: '',
-          salary: '',
-          jobType: '',
-          skills: ''
-        };
-      },
+          // Form clear
+          this.title = '';
+          this.company = '';
+          this.location = '';
+          this.salary = '';
+          this.jobType = '';
+          this.skills = '';
+          this.description = '';
+        },
 
-      error: (error) => {
-        console.error('Create Job error:', error);
-        this.errorMessage = 'Job create nahi ho pa rahi hai';
-        this.message = '';
-      }
-    });
+        error: (error) => {
+          console.error('Create job error:', error);
+
+          this.loading = false;
+
+          this.errorMessage =
+            error.error?.message ||
+            'Job create nahi ho paayi.';
+        }
+      });
   }
 
+  cancel() {
+    this.router.navigate(['/recruiter-dashboard']);
+  }
 }

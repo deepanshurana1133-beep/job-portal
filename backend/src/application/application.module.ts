@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ApplicationController } from './application.controller';
 import { ApplicationService } from './application.service';
-
+import { EmailModule } from '../email/email.module';
 import {
   Application,
   ApplicationSchema,
@@ -17,6 +17,7 @@ import {
         schema: ApplicationSchema,
       },
     ]),
+    EmailModule,
   ],
   controllers: [ApplicationController],
   providers: [ApplicationService],
