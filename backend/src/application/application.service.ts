@@ -3,6 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
@@ -10,19 +11,25 @@ import {
   Application,
   ApplicationDocument,
 } from './schemas/application.schema';
+
 import { Response } from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+
 import { EmailService } from '../email/email.service';
+
 @Injectable()
 export class ApplicationService {
- constructor(
-  @InjectModel(Application.name)
-  private applicationModel: Model<ApplicationDocument>,
+  constructor(
+    @InjectModel(Application.name)
+    private applicationModel: Model<ApplicationDocument>,
 
-  private emailService: EmailService,
-) {}
+    private emailService: EmailService,
+  ) {}
 
+  // =========================
+  // Apply For Job
+  // =========================
   async applyForJob(
     jobId: string,
     userId: string,
@@ -38,6 +45,9 @@ export class ApplicationService {
     return application.save();
   }
 
+  // =========================
+  // Get My Applications
+  // =========================
   async getMyApplications(userId: string) {
     return this.applicationModel
       .find({
@@ -47,151 +57,204 @@ export class ApplicationService {
       .exec();
   }
 
-  async getApplicationById(id: string, userId: string) {
-  const application = await this.applicationModel
-    .findOne({
-      _id: id,
-      userId: new Types.ObjectId(userId),
-    })
-    .populate('jobId')
-    .populate('userId')
-    .exec();
+  // =========================
+  // Get Application By ID
+  // =========================
+  async getApplicationById(
+    id: string,
+    userId: string,
+  ) {
+    const application = await this.applicationModel
+      .findOne({
+        _id: id,
+        userId: new Types.ObjectId(userId),
+      })
+      .populate('jobId')
+      .populate('userId')
+      .exec();
 
-  if (!application) {
-    throw new NotFoundException('Application not found');
+    if (!application) {
+      throw new NotFoundException(
+        'Application not found',
+      );
+    }
+
+    return application;
   }
 
-  return application;
-}
-
+  // =========================
+  // Update Application Status
+  // =========================
   async updateStatus(
-  id: string,
-  status: 'Pending' | 'Accepted' | 'Rejected',
-  userId: string,
-  role: string,
-) {
-  if (role !== 'recruiter') {
-    throw new UnauthorizedException(
-      'Only recruiters can update application status',
-    );
-  }
-
-  const application = await this.applicationModel
-    .findById(id)
-    .populate('jobId')
-    .populate('userId')
-    .exec();
-
-  if (!application) {
-    throw new NotFoundException('Application not found');
-  }
-
-  const job = application.jobId as any;
-
-  if (job.recruiterId.toString() !== userId) {
-    throw new UnauthorizedException(
-      'You can only update applications for your own jobs',
-    );
-  }
-
-  application.status = status;
-
-  const savedApplication = await application.save();
-
-  const user = application.userId as any;
-
-  if (
-    (status === 'Accepted' || status === 'Rejected') &&
-    user?.email &&
-    job?.title
+    id: string,
+    status: 'Pending' | 'Accepted' | 'Rejected',
+    userId: string,
+    role: string,
   ) {
-    await this.emailService.sendApplicationStatusEmail(
-      user.email,
-      job.title,
-      status,
-    );
-  }
+    // Only recruiter can update status
+    if (role !== 'recruiter') {
+      throw new UnauthorizedException(
+        'Only recruiters can update application status',
+      );
+    }
 
-  return savedApplication;
-}
-async getRecruiterApplications(recruiterId: string) {
-  const applications = await this.applicationModel
-    .find()
-    .populate({
-      path: 'jobId',
-      match: {
-        recruiterId: new Types.ObjectId(recruiterId),
-      },
-    })
-.populate({
-  path: 'userId',
-  select: '-password',
-})
+    const application = await this.applicationModel
+      .findById(id)
+      .populate('jobId')
+      .populate('userId')
+      .exec();
 
-  return applications.filter(
-    (application) => application.jobId !== null,
-  );
-}
-async viewResume(
-  id: string,
-  userId: string,
-  role: string,
-  res: Response,
-) {
-  const application = await this.applicationModel
-    .findById(id)
-    .populate('jobId')
-    .exec();
+    if (!application) {
+      throw new NotFoundException(
+        'Application not found',
+      );
+    }
 
-  if (!application) {
-    throw new NotFoundException('Application not found');
-  }
+    const job = application.jobId as any;
 
-  const job = application.jobId as any;
+    // Recruiter can update only their own job applications
+    if (job.recruiterId.toString() !== userId) {
+      throw new UnauthorizedException(
+        'You can only update applications for your own jobs',
+      );
+    }
 
-  // Recruiter can view only applications for their own jobs
-  if (
-    role === 'recruiter' &&
-    job.recruiterId.toString() !== userId
-  ) {
-    throw new UnauthorizedException(
-      'You can only view resumes for your own jobs',
-    );
-  }
+    // Update status
+    application.status = status;
 
-  const filePath = path.join(
-    process.cwd(),
-    'uploads',
-    'resumes',
-    application.resume,
-  );
+    // Save status in database first
+    const savedApplication =
+      await application.save();
 
-  if (!fs.existsSync(filePath)) {
-    throw new NotFoundException(
-      'Resume file not found',
-    );
-  }
+    const user = application.userId as any;
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf',
-  );
+    // =========================
+    // Send Email Notification
+    // =========================
+    if (
+      (status === 'Accepted' ||
+        status === 'Rejected') &&
+      user?.email &&
+      job?.title
+    ) {
+      try {
+        await this.emailService.sendApplicationStatusEmail(
+          user.email,
+          job.title,
+          status,
+        );
 
-  res.setHeader(
-    'Content-Disposition',
-    'inline',
-  );
-
-  return res.sendFile(
-    filePath,
-    (error) => {
-      if (error) {
+        console.log(
+          `Status email sent to ${user.email}`,
+        );
+      } catch (error) {
+        // Email failure should NOT cause 500 error
         console.error(
-          'Resume send error:',
+          'Email notification failed:',
           error,
         );
       }
-    },
-  );
-}
+    }
+
+    // Always return saved application
+    return savedApplication;
+  }
+
+  // =========================
+  // Get Recruiter Applications
+  // =========================
+  async getRecruiterApplications(
+    recruiterId: string,
+  ) {
+    const applications =
+      await this.applicationModel
+        .find()
+        .populate({
+          path: 'jobId',
+          match: {
+            recruiterId: new Types.ObjectId(
+              recruiterId,
+            ),
+          },
+        })
+        .populate({
+          path: 'userId',
+          select: '-password',
+        });
+
+    return applications.filter(
+      (application) =>
+        application.jobId !== null,
+    );
+  }
+
+  // =========================
+  // View Resume
+  // =========================
+  async viewResume(
+    id: string,
+    userId: string,
+    role: string,
+    res: Response,
+  ) {
+    const application =
+      await this.applicationModel
+        .findById(id)
+        .populate('jobId')
+        .exec();
+
+    if (!application) {
+      throw new NotFoundException(
+        'Application not found',
+      );
+    }
+
+    const job = application.jobId as any;
+
+    // Recruiter can view only applications
+    // for their own jobs
+    if (
+      role === 'recruiter' &&
+      job.recruiterId.toString() !== userId
+    ) {
+      throw new UnauthorizedException(
+        'You can only view resumes for your own jobs',
+      );
+    }
+
+    const filePath = path.join(
+      process.cwd(),
+      'uploads',
+      'resumes',
+      application.resume,
+    );
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(
+        'Resume file not found',
+      );
+    }
+
+    res.setHeader(
+      'Content-Type',
+      'application/pdf',
+    );
+
+    res.setHeader(
+      'Content-Disposition',
+      'inline',
+    );
+
+    return res.sendFile(
+      filePath,
+      (error) => {
+        if (error) {
+          console.error(
+            'Resume send error:',
+            error,
+          );
+        }
+      },
+    );
+  }
 }
