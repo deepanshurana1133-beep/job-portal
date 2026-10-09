@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-recruiter-applications',
@@ -42,7 +43,7 @@ export class RecruiterApplicationsComponent implements OnInit {
 
     this.http
       .get<any[]>(
-        'http://localhost:3000/applications/recruiter',
+        `${environment.apiUrl}/applications/recruiter`,
         { headers }
       )
       .subscribe({
@@ -87,7 +88,7 @@ export class RecruiterApplicationsComponent implements OnInit {
 
     this.http
       .patch(
-        `http://localhost:3000/applications/${applicationId}/status`,
+        `${environment.apiUrl}/applications/${applicationId}/status`,
         body,
         { headers }
       )
@@ -121,7 +122,7 @@ export class RecruiterApplicationsComponent implements OnInit {
     }
 
     const url =
-      `http://localhost:3000/applications/${applicationId}/resume`;
+      `${environment.apiUrl}/applications/${applicationId}/resume`;
 
     /*
      * Resume endpoint protected hai, isliye token ke saath

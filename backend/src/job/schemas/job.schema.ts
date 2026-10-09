@@ -28,6 +28,9 @@ export class Job {
 
   @Prop({ required: true })
   recruiterId: string;
+
+  @Prop({ enum: ['Actively Hiring', 'Urgent Opening'] })
+  urgencyTag?: 'Actively Hiring' | 'Urgent Opening';
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -58,7 +59,7 @@ export class RegisterComponent {
 
     this.http
       .post<any>(
-        'http://localhost:3000/user/register',
+        `${environment.apiUrl}/user/register`,
         registerData
       )
       .subscribe({

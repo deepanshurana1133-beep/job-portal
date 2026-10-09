@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-update-job',
@@ -49,7 +50,7 @@ export class UpdateJobComponent implements OnInit {
   getJob() {
 
     this.http.get<any>(
-      `http://localhost:3000/jobs/${this.jobId}`
+      `${environment.apiUrl}/jobs/${this.jobId}`
     ).subscribe({
       next: (response) => {
 
@@ -102,7 +103,7 @@ export class UpdateJobComponent implements OnInit {
     };
 
     this.http.patch(
-      `http://localhost:3000/jobs/${this.jobId}`,
+      `${environment.apiUrl}/jobs/${this.jobId}`,
       jobData,
       { headers }
     ).subscribe({

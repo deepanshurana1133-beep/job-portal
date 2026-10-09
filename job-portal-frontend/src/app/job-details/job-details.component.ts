@@ -5,6 +5,7 @@ import {
   HttpClient,
   HttpHeaders
 } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-job-details',
@@ -50,7 +51,7 @@ export class JobDetailsComponent implements OnInit {
 
     this.http
       .get<any>(
-        `http://localhost:3000/jobs/${jobId}`
+        `${environment.apiUrl}/jobs/${jobId}`
       )
       .subscribe({
 
@@ -164,7 +165,7 @@ export class JobDetailsComponent implements OnInit {
 
     this.http
       .post(
-        'http://localhost:3000/applications',
+        `${environment.apiUrl}/applications`,
         formData,
         { headers }
       )

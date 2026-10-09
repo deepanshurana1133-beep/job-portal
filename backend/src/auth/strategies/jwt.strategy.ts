@@ -2,13 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+const jwtSecret = process.env.JWT_SECRET ?? '';
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET must be configured in backend/.env');
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'job-portal-secret',
+      secretOrKey: jwtSecret,
     });
   }
 

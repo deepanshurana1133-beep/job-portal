@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-recruiter-jobs',
@@ -39,7 +40,7 @@ export class RecruiterJobsComponent implements OnInit {
     });
 
     this.http
-      .get<any[]>('http://localhost:3000/jobs', { headers })
+      .get<any[]>(`${environment.apiUrl}/jobs`, { headers })
       .subscribe({
         next: (response) => {
           console.log('Jobs:', response);
@@ -84,7 +85,7 @@ export class RecruiterJobsComponent implements OnInit {
     });
 
     this.http
-      .delete(`http://localhost:3000/jobs/${jobId}`, { headers })
+      .delete(`${environment.apiUrl}/jobs/${jobId}`, { headers })
       .subscribe({
         next: () => {
           alert('Job deleted successfully!');

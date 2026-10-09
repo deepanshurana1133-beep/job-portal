@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -28,7 +29,7 @@ export class LoginComponent {
     };
 
     this.http
-      .post<any>('http://localhost:3000/auth/login', loginData)
+      .post<any>(`${environment.apiUrl}/auth/login`, loginData)
       .subscribe({
         next: (response) => {
   console.log('Login successful:', response);

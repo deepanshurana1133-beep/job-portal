@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-my-applications',
@@ -29,7 +30,7 @@ export class MyApplicationsComponent implements OnInit {
     }
 
     this.http.get<any[]>(
-      'http://localhost:3000/applications/my',
+      `${environment.apiUrl}/applications/my`,
       {
         headers: {
           Authorization: `Bearer ${token}`

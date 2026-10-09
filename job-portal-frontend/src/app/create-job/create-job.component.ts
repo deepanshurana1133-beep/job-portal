@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-create-job',
@@ -77,7 +78,7 @@ export class CreateJobComponent {
 
     this.http
       .post(
-        'http://localhost:3000/jobs',
+        `${environment.apiUrl}/jobs`,
         jobData,
         { headers }
       )
