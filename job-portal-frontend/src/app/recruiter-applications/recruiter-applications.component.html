@@ -3,6 +3,7 @@
   <div class="page-header">
 
     <div>
+      <span class="eyebrow">RECRUITER WORKSPACE</span>
       <h1>Applications</h1>
       <p>Manage applications received for your jobs</p>
     </div>
@@ -19,6 +20,7 @@
   <div
     *ngIf="successMessage"
     class="success-message"
+    role="status"
   >
     {{ successMessage }}
   </div>
@@ -26,15 +28,18 @@
   <div
     *ngIf="errorMessage"
     class="error-message"
+    role="alert"
   >
     {{ errorMessage }}
   </div>
 
   <div
     *ngIf="loading"
-    class="loading"
+    class="loading-state"
+    role="status"
   >
-    Loading applications...
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Loading applications...</span>
   </div>
 
   <div
@@ -61,6 +66,7 @@
       <div class="application-header">
 
         <div>
+          <span class="eyebrow">{{ application.userId?.name || 'Applicant' }}</span>
           <h2>
             {{ application.jobId?.title || 'Job' }}
           </h2>
@@ -71,14 +77,14 @@
         </div>
 
         <span
-          class="status"
+          class="status-badge"
           [ngClass]="{
             'pending': application.status === 'Pending',
             'accepted': application.status === 'Accepted',
             'rejected': application.status === 'Rejected'
           }"
         >
-          {{ application.status }}
+          <span class="status-dot" aria-hidden="true"></span>{{ application.status }}
         </span>
 
       </div>
@@ -86,13 +92,13 @@
       <div class="applicant-info">
 
         <p>
-          <strong>Applicant:</strong>
-          {{ application.userId?.name || 'N/A' }}
+        <strong>Email address</strong>
+        <a [href]="'mailto:' + application.userId?.email">{{ application.userId?.email || 'N/A' }}</a>
         </p>
 
         <p>
-          <strong>Email:</strong>
-          {{ application.userId?.email || 'N/A' }}
+        <strong>Applied</strong>
+        {{ application.createdAt | date:'mediumDate' }}
         </p>
 
       </div>
@@ -110,16 +116,18 @@
           class="accept-btn"
           *ngIf="application.status !== 'Accepted'"
           (click)="updateStatus(application._id, 'Accepted')"
+          [disabled]="updatingApplicationId !== null"
         >
-          Accept
+          {{ updatingApplicationId === application._id ? 'Updating...' : 'Accept' }}
         </button>
 
         <button
           class="reject-btn"
           *ngIf="application.status !== 'Rejected'"
           (click)="updateStatus(application._id, 'Rejected')"
+          [disabled]="updatingApplicationId !== null"
         >
-          Reject
+          {{ updatingApplicationId === application._id ? 'Updating...' : 'Reject' }}
         </button>
 
       </div>

@@ -1,66 +1,45 @@
-<div class="jobs-container">
+<main class="jobs-container">
+  <header class="jobs-page-header">
+    <div>
+      <span class="eyebrow">EXPLORE OPPORTUNITIES</span>
+      <h1>Find your next role</h1>
+      <p>Discover roles from teams looking for people like you.</p>
+    </div>
+    <button class="secondary-button" (click)="viewMyApplications()">My applications</button>
+  </header>
 
-  <div class="jobs-header">
-    <h1>Available Jobs</h1>
+  <div *ngIf="errorMessage" class="error-message" role="alert">{{ errorMessage }}</div>
 
-    
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Finding opportunities...</span>
   </div>
 
-  <p *ngIf="errorMessage" class="error">
-    {{ errorMessage }}
-  </p>
+  <section *ngIf="!loading && !errorMessage && jobs.length === 0" class="empty-state">
+    <span class="empty-icon" aria-hidden="true">⌕</span>
+    <h2>No open roles just yet</h2>
+    <p>Check back soon for new opportunities.</p>
+  </section>
 
-  <div
-    class="job-card"
-    *ngFor="let job of jobs"
-  >
-
-    <h2>{{ job.title }}</h2>
-
-    <p>
-      <strong>Company:</strong>
-      {{ job.company }}
-    </p>
-
-    <p>
-      <strong>Location:</strong>
-      {{ job.location }}
-    </p>
-
-    <p>
-      <strong>Salary:</strong>
-      {{ job.salary }}
-    </p>
-
-    <p>
-      <strong>Job Type:</strong>
-      {{ job.jobType }}
-    </p>
-
-    <p>
-      <strong>Description:</strong>
-      {{ job.description }}
-    </p>
-
-    <p>
-      <strong>Skills:</strong>
-      {{ job.skills.join(', ') }}
-    </p>
-
-   <div class="job-buttons">
-
-  <button (click)="viewJob(job._id)">
-    View & Apply
-  </button>
-
-  <button
-    class="applications-btn"
-    (click)="viewMyApplications()"
-  >
-    My Applications
-  </button>
-
-</div>
-  </div>
-
-</div>
+  <section *ngIf="!loading && jobs.length > 0" class="jobs-grid" aria-label="Available jobs">
+    <article class="job-card" *ngFor="let job of jobs">
+      <div class="job-card-top">
+        <span class="company-mark" aria-hidden="true">{{ (job.company || 'C').charAt(0) }}</span>
+        <span class="job-type">{{ job.jobType || 'Position' }}</span>
+      </div>
+      <h2>{{ job.title }}</h2>
+      <p class="job-company">{{ job.company }}</p>
+      <div class="job-meta">
+        <span><span aria-hidden="true">⌖</span> {{ job.location }}</span>
+        <span><span aria-hidden="true">◷</span> {{ job.salary }}</span>
+      </div>
+      <p class="job-description">{{ job.description }}</p>
+      <div class="skills" *ngIf="job.skills?.length">
+        <span class="skill" *ngFor="let skill of job.skills">{{ skill }}</span>
+      </div>
+      <button class="primary-button job-card-action" (click)="viewJob(job._id)">
+        View role <span aria-hidden="true">→</span>
+      </button>
+    </article>
+  </section>
+</main>

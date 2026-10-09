@@ -5,6 +5,8 @@ import {
   HttpClient,
   HttpHeaders
 } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-job-details',
@@ -50,13 +52,11 @@ export class JobDetailsComponent implements OnInit {
 
     this.http
       .get<any>(
-        `http://localhost:3000/jobs/${jobId}`
+        `${environment.apiUrl}/jobs/${jobId}`
       )
       .subscribe({
 
         next: (response) => {
-
-          console.log('Job details:', response);
 
           this.job = response;
 
@@ -65,13 +65,10 @@ export class JobDetailsComponent implements OnInit {
 
         error: (error) => {
 
-          console.error(
-            'Job details error:',
-            error
+          this.errorMessage = apiErrorMessage(
+            error,
+            'Unable to load job details.',
           );
-
-          this.errorMessage =
-            'Job details load nahi ho pa rahi hain';
 
           this.loading = false;
         }
@@ -101,6 +98,12 @@ export class JobDetailsComponent implements OnInit {
 
       this.selectedFile = null;
 
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.errorMessage = 'Resume must be 5 MB or smaller.';
+      this.selectedFile = null;
       return;
     }
 
@@ -164,18 +167,13 @@ export class JobDetailsComponent implements OnInit {
 
     this.http
       .post(
-        'http://localhost:3000/applications',
+        `${environment.apiUrl}/applications`,
         formData,
         { headers }
       )
       .subscribe({
 
         next: (response) => {
-
-          console.log(
-            'Application successful:',
-            response
-          );
 
           this.successMessage =
             'Application submitted successfully!';
@@ -192,9 +190,10 @@ export class JobDetailsComponent implements OnInit {
             error
           );
 
-          this.errorMessage =
-            error.error?.message ||
-            'Application submit nahi ho pa rahi hai';
+          this.errorMessage = apiErrorMessage(
+            error,
+            'Unable to submit your application.',
+          );
 
           this.applying = false;
         }

@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -28,15 +30,11 @@ export class LoginComponent {
     };
 
     this.http
-      .post<any>('http://localhost:3000/auth/login', loginData)
+      .post<any>(`${environment.apiUrl}/auth/login`, loginData)
       .subscribe({
         next: (response) => {
-  console.log('Login successful:', response);
-localStorage.setItem(
-  'userRole',
-  response.user.role
-);
-  localStorage.setItem(
+        localStorage.removeItem('userRole');
+        localStorage.setItem(
     'accessToken',
     response.accessToken
   );
@@ -46,10 +44,8 @@ if (response.user.role === 'recruiter') {
   this.router.navigate(['/jobs']);
 }
 },
-        error: (error) => {
-          console.error('Login error:', error);
-          this.errorMessage =
-            error.error?.message || 'Invalid email or password';
+error: (error) => {
+  this.errorMessage = apiErrorMessage(error, 'Invalid email or password');
         }
       });
   }

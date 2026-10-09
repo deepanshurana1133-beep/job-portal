@@ -1,16 +1,16 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
+import { getAccessTokenClaims } from './auth-token';
 
 export const recruiterGuard: CanActivateFn = () => {
 
   const router = inject(Router);
 
-  const role = localStorage.getItem('userRole');
+  const role = getAccessTokenClaims()?.role;
 
   if (role === 'recruiter') {
     return true;
   }
 
-  router.navigate(['/jobs']);
-  return false;
+  return router.createUrlTree(['/jobs']);
 };

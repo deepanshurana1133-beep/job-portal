@@ -1,0 +1,10 @@
+{
+  "name": "job-portal",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others -n backend,frontend -c blue,green \"npm --prefix backend run start:dev\" \"npm --prefix job-portal-frontend run start -- --open\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

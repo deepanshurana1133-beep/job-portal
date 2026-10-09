@@ -11,6 +11,7 @@ import { authGuard } from './auth.guard';
 import { recruiterGuard } from './role.guard';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { RegisterComponent } from './register/register.component';
+import { UpdateJobComponent } from './update-job/update-job.component';
 export const routes: Routes = [
   {
     path: '',
@@ -35,7 +36,8 @@ export const routes: Routes = [
   },
   {
   path: 'my-applications',
-  component: MyApplicationsComponent
+  component: MyApplicationsComponent,
+  canActivate: [authGuard]
 },
 {
   path: 'recruiter-dashboard',
@@ -45,6 +47,11 @@ export const routes: Routes = [
 {
   path: 'create-job',
   component: CreateJobComponent,
+  canActivate: [authGuard, recruiterGuard]
+},
+{
+  path: 'update-job/:id',
+  component: UpdateJobComponent,
   canActivate: [authGuard, recruiterGuard]
 },
 {
@@ -60,5 +67,9 @@ export const routes: Routes = [
 {
   path: 'jobs/:id',
   component: JobDetailsComponent
+},
+{
+  path: '**',
+  redirectTo: 'welcome'
 }
 ];

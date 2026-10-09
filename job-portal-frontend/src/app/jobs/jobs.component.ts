@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-jobs',
@@ -14,6 +16,7 @@ export class JobsComponent implements OnInit {
 
   jobs: any[] = [];
   errorMessage = '';
+  loading = true;
 
   constructor(
     private http: HttpClient,
@@ -26,16 +29,15 @@ export class JobsComponent implements OnInit {
 
   getJobs(): void {
     this.http
-      .get<any[]>('http://localhost:3000/jobs')
+      .get<any[]>(`${environment.apiUrl}/jobs`)
       .subscribe({
         next: (response) => {
-          console.log('Jobs:', response);
           this.jobs = response;
+          this.loading = false;
         },
         error: (error) => {
-          console.error('Jobs error:', error);
-          this.errorMessage =
-            'Jobs load nahi ho pa rahe hain';
+          this.errorMessage = apiErrorMessage(error, 'Unable to load jobs.');
+          this.loading = false;
         }
       });
   }

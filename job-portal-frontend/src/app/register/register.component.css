@@ -1,112 +1,40 @@
 .register-container {
-  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  min-height: 100vh;
   align-items: center;
-  background: url('/job-portal-bg.png') center/cover no-repeat;
-  padding: 20px;
+  justify-content: center;
+  flex-direction: column;
+  padding: 26px 20px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(220, 229, 250, 0.7), transparent 43%),
+    #f6f8fc;
 }
 
 .register-box {
-  width: 100%;
-  max-width: 450px;
-  background: rgba(255, 255, 255, 0.96);
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+  width: min(100%, 590px);
+  padding: 34px 38px;
+  border: 1px solid #e2e8f1;
+  border-radius: var(--radius-card);
+  background: #fff;
+  box-shadow: var(--shadow-card);
 }
 
-.register-box h1 {
-  text-align: center;
-  margin: 0;
-  color: #2563eb;
-  font-size: 32px;
-}
+.register-box .form-group { margin-bottom: 15px; }
+.register-box .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.register-box .register-subtitle { margin-bottom: 22px; }
 
-.register-box h2 {
-  text-align: center;
-  margin: 8px 0;
-  color: #222;
-}
-
-.register-subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 25px;
-}
-
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 7px;
-  font-weight: 600;
-  color: #333;
-}
-
-.form-group input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
+.register-box .error,
+.register-box .success {
+  margin: 12px 0;
+  padding: 10px 12px;
   border-radius: 8px;
-  font-size: 15px;
-  outline: none;
+  font-size: 13px;
 }
 
-.form-group input:focus {
-  border-color: #2563eb;
-}
+.register-box .error { background: #fff1f0; color: #a53e3a; }
+.register-box .success { background: #effaf4; color: #176b43; }
 
-form > button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-form > button:hover {
-  background: #1d4ed8;
-}
-
-.error {
-  color: #dc2626;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.success {
-  color: #16a34a;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.login-section {
-  text-align: center;
-  margin-top: 22px;
-}
-
-.login-section p {
-  margin-bottom: 8px;
-  color: #666;
-}
-
-.login-btn {
-  background: none;
-  border: none;
-  color: #2563eb;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.login-btn:hover {
-  text-decoration: underline;
+@media (max-width: 560px) {
+  .register-box { padding: 28px 22px; }
+  .register-box .form-row { grid-template-columns: 1fr; gap: 0; }
 }

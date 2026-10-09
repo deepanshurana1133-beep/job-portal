@@ -1,1 +1,377 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #17243b;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --color-primary: #3157c8;
+  --color-primary-hover: #2447ad;
+  --color-ink: #17243b;
+  --color-muted: #64748b;
+  --color-border: #e1e7f0;
+  --color-surface: #ffffff;
+  --color-canvas: #f5f7fb;
+  --shadow-card: 0 12px 32px rgba(26, 46, 82, 0.07);
+  --radius-card: 16px;
+  --content-width: 1120px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--color-canvas);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: background-color 160ms ease, border-color 160ms ease,
+    box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(49, 87, 200, 0.28);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  color: var(--color-ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8995a8;
+  opacity: 1;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-ink);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.65;
+}
+
+.eyebrow,
+.auth-eyebrow {
+  display: inline-block;
+  color: #59709b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.primary-button,
+.secondary-button,
+.text-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 17px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 5px 12px rgba(49, 87, 200, 0.14);
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--color-primary-hover);
+  box-shadow: 0 8px 18px rgba(49, 87, 200, 0.2);
+}
+
+.secondary-button {
+  border-color: var(--color-border);
+  background: white;
+  color: #34445f;
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: #becbe0;
+  background: #f8faff;
+}
+
+.text-button {
+  min-height: unset;
+  padding: 4px;
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.text-button:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.form-group label,
+.apply-panel > label {
+  display: block;
+  margin-bottom: 7px;
+  color: #35445b;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.apply-panel input[type='file'],
+.update-job-container input,
+.update-job-container textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #d7dfeb;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--color-ink);
+  font-size: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.apply-panel input[type='file']:focus,
+.update-job-container input:focus,
+.update-job-container textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(49, 87, 200, 0.1);
+  outline: none;
+}
+
+.form-group textarea,
+.update-job-container textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.error-message,
+.success-message {
+  padding: 12px 15px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.error-message {
+  border-color: #f0c6c5;
+  background: #fff4f3;
+  color: #9e302d;
+}
+
+.success-message {
+  border-color: #bee4d0;
+  background: #effaf4;
+  color: #176b43;
+}
+
+.loading-state {
+  display: flex;
+  min-height: 140px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--color-muted);
+}
+
+.loading-spinner {
+  width: 19px;
+  height: 19px;
+  border: 2px solid #d9e2f2;
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  max-width: 660px;
+  margin: 30px auto;
+  padding: 48px 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.empty-state h2 {
+  margin: 14px 0 8px;
+  font-size: 22px;
+}
+
+.empty-state p {
+  max-width: 430px;
+  margin: 0 auto 20px;
+  color: var(--color-muted);
+}
+
+.empty-icon {
+  display: inline-grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 15px;
+  background: #eef2ff;
+  color: var(--color-primary);
+  font-size: 27px;
+}
+
+.company-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #dfe6f2;
+  border-radius: 13px;
+  background: #f1f4fb;
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 18px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.job-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.job-type,
+.skill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: #f0f3fa;
+  color: #435572;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-badge.pending {
+  border-color: #f1dfae;
+  background: #fff8e7;
+  color: #8a6414;
+}
+
+.status-badge.accepted {
+  border-color: #bce4cf;
+  background: #edf9f2;
+  color: #1d7548;
+}
+
+.status-badge.rejected {
+  border-color: #f0c9c8;
+  background: #fff1f0;
+  color: #a53e3a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

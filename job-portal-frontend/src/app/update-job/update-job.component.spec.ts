@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { UpdateJobComponent } from './update-job.component';
 
@@ -8,7 +10,7 @@ describe('UpdateJobComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpdateJobComponent]
+      imports: [UpdateJobComponent, HttpClientTestingModule, RouterTestingModule]
     })
     .compileComponents();
 

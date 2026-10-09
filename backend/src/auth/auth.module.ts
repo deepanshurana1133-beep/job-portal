@@ -8,7 +8,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     UserModule,
     JwtModule.register({
-      secret: 'job-portal-secret',
+      secret: process.env.JWT_SECRET ?? '',
       signOptions: { expiresIn: '1d' },
     }),
   ],

@@ -31,6 +31,12 @@
 $ npm install
 ```
 
+## Environment configuration
+
+Copy `.env.example` to `.env` and set `MONGODB_URI`, a unique `JWT_SECRET` of at least 32 characters, `FRONTEND_URL`, and `PORT`. `FRONTEND_URL` may contain a comma-separated list of trusted frontend origins. Set both `EMAIL_USER` and `EMAIL_PASSWORD` to enable Gmail status notifications; the service verifies the SMTP transport at startup. Recruiter accounts must be provisioned through a trusted administrative process; public registration only permits `job_seeker`.
+
+Never commit `.env`, uploaded resumes, or production credentials.
+
 ## Compile and run the project
 
 ```bash

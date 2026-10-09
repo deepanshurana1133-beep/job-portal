@@ -1,69 +1,52 @@
-<div class="applications-container">
-
-  <h1>My Applications</h1>
-
-  <p *ngIf="errorMessage" class="error">
-    {{ errorMessage }}
-  </p>
-
-  <p
-    *ngIf="!errorMessage && applications.length === 0"
-    class="no-applications"
-  >
-    No applications found.
-  </p>
-
-  <div
-    class="application-card"
-    *ngFor="let application of applications"
-  >
-
-    <h2>
-      {{ application.jobId?.title || 'Job' }}
-    </h2>
-
-    <p>
-      <strong>Company:</strong>
-      {{ application.jobId?.company || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Location:</strong>
-      {{ application.jobId?.location || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Applied On:</strong>
-      {{ application.createdAt | date:'medium' }}
-    </p>
-
-    <div class="status-section">
-
-      <strong>Application Status</strong>
-
-      <span
-        class="status-badge"
-        [ngClass]="{
-          'pending': application.status === 'Pending',
-          'accepted': application.status === 'Accepted',
-          'rejected': application.status === 'Rejected'
-        }"
-      >
-        <span *ngIf="application.status === 'Pending'">
-          🟡 Pending
-        </span>
-
-        <span *ngIf="application.status === 'Accepted'">
-          🟢 Accepted
-        </span>
-
-        <span *ngIf="application.status === 'Rejected'">
-          🔴 Rejected
-        </span>
-      </span>
-
+<main class="applications-container">
+  <header class="applications-page-header">
+    <div>
+      <span class="eyebrow">YOUR JOB SEARCH</span>
+      <h1>My applications</h1>
+      <p>Keep track of the opportunities you have applied for.</p>
     </div>
+    <a class="secondary-button" routerLink="/jobs">Browse jobs</a>
+  </header>
 
+  <div *ngIf="errorMessage" class="error-message" role="alert">{{ errorMessage }}</div>
+
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Loading your applications...</span>
   </div>
 
-</div>
+  <section *ngIf="!loading && !errorMessage && applications.length === 0" class="empty-state">
+    <span class="empty-icon" aria-hidden="true">▤</span>
+    <h2>Your next opportunity starts here</h2>
+    <p>You haven't submitted any applications yet. Explore open roles and take the next step.</p>
+    <a class="primary-button" routerLink="/jobs">Explore jobs</a>
+  </section>
+
+  <section *ngIf="!loading && applications.length > 0" class="applications-list">
+    <article class="application-card" *ngFor="let application of applications">
+      <div class="application-card-heading">
+        <div>
+          <span class="eyebrow">{{ application.jobId?.company || 'Company' }}</span>
+          <h2>{{ application.jobId?.title || 'Job' }}</h2>
+        </div>
+        <span
+          class="status-badge"
+          [ngClass]="{
+            'pending': application.status === 'Pending',
+            'accepted': application.status === 'Accepted',
+            'rejected': application.status === 'Rejected'
+          }"
+        >
+          <span class="status-dot" aria-hidden="true"></span>{{ application.status }}
+        </span>
+      </div>
+      <div class="application-meta">
+        <span><strong>Location</strong>{{ application.jobId?.location || 'Not specified' }}</span>
+        <span><strong>Applied</strong>{{ application.createdAt | date:'mediumDate' }}</span>
+      </div>
+      <p class="status-hint" *ngIf="application.status === 'Pending'">Your application is with the recruiter for review.</p>
+      <p class="status-hint" *ngIf="application.status === 'Accepted'">The recruiter has accepted your application.</p>
+      <p class="status-hint" *ngIf="application.status === 'Rejected'">The recruiter has completed their review.</p>
+    </article>
+  </section>
+</main>

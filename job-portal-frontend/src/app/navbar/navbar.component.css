@@ -1,36 +1,13 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  background: #1f2937;
-  color: white;
-}
+.navbar { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 20px; padding: 10px clamp(18px, 5vw, 64px); border-bottom: 1px solid var(--color-border); background: #fff; }
+.logo { color: var(--color-ink); font-size: 18px; font-weight: 700; }
+.nav-links { display: flex; align-items: center; gap: 21px; }
+.nav-links a { color: #52627a; font-size: 14px; font-weight: 600; text-decoration: none; }
+.nav-links a:hover { color: var(--color-primary); }
+.nav-links button { min-height: 38px; padding: 8px 13px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; color: #46566f; font-weight: 650; cursor: pointer; }
+.nav-links button:hover { background: #f5f7fb; }
 
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.nav-links a:hover {
-  text-decoration: underline;
-}
-
-.nav-links button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+@media (max-width: 500px) {
+  .navbar { align-items: flex-start; flex-direction: column; gap: 10px; padding: 14px 18px; }
+  .nav-links { width: 100%; justify-content: space-between; gap: 9px; }
+  .nav-links a { font-size: 12px; }
 }

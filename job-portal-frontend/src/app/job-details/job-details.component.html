@@ -1,131 +1,64 @@
-<div class="job-details-container">
+<main class="job-details-container">
+  <button class="back-link" (click)="goBack()">← Back to jobs</button>
 
-  <!-- Error Message -->
-  <p
-    *ngIf="errorMessage"
-    class="error"
-  >
-    {{ errorMessage }}
-  </p>
-
-  <!-- Success Message -->
-  <p
-    *ngIf="successMessage"
-    class="success"
-  >
-    {{ successMessage }}
-  </p>
-
-  <!-- Job Details -->
-  <div
-    *ngIf="job"
-    class="job-details"
-  >
-
-    <h1>{{ job.title }}</h1>
-
-    <h3>{{ job.company }}</h3>
-
-    <p>
-      <strong>Location:</strong>
-      {{ job.location }}
-    </p>
-
-    <p>
-      <strong>Salary:</strong>
-      {{ job.salary }}
-    </p>
-
-    <p>
-      <strong>Job Type:</strong>
-      {{ job.jobType }}
-    </p>
-
-    <div>
-      <strong>Description:</strong>
-
-      <p>
-        {{ job.description }}
-      </p>
-    </div>
-
-    <div>
-      <strong>Skills:</strong>
-
-      <span
-        class="skill"
-        *ngFor="let skill of job.skills"
-      >
-        {{ skill }}
-      </span>
-    </div>
-
-    <hr>
-
-    <!-- Apply Section -->
-    <h2>Apply for this Job</h2>
-
-    <label for="resume">
-      Upload Resume (PDF)
-    </label>
-
-    <input
-      id="resume"
-      type="file"
-      accept="application/pdf"
-      (change)="onFileSelected($event)"
-    >
-
-    <!-- Selected File -->
-    <p *ngIf="selectedFile">
-
-      Selected file:
-
-      <strong>
-        {{ selectedFile.name }}
-      </strong>
-
-    </p>
-
-    <!-- Apply Button -->
-    <button
-      (click)="applyForJob()"
-      [disabled]="applying"
-    >
-      {{
-        applying
-          ? 'Applying...'
-          : 'Apply Now'
-      }}
-    </button>
-
-    <!-- My Applications Button -->
-    <div
-      *ngIf="showMyApplicationsButton"
-      class="my-applications-section"
-    >
-
-      <button
-        class="my-applications-btn"
-        (click)="viewMyApplications()"
-      >
-        View My Applications
-      </button>
-
-    </div>
-
-    <!-- Back Button -->
-    <div class="back-section">
-
-      <button
-        class="back-btn"
-        (click)="goBack()"
-      >
-        ← Back to Jobs
-      </button>
-
-    </div>
-
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Loading role details...</span>
   </div>
 
-</div>
+  <div *ngIf="errorMessage" class="error-message" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-message" role="status">{{ successMessage }}</div>
+
+  <section *ngIf="job && !loading" class="job-details-layout">
+    <article class="job-details">
+      <header class="job-details-header">
+        <span class="company-mark" aria-hidden="true">{{ (job.company || 'C').charAt(0) }}</span>
+        <div>
+          <span class="eyebrow">{{ job.company }}</span>
+          <h1>{{ job.title }}</h1>
+          <div class="job-meta">
+            <span>{{ job.location }}</span>
+            <span>{{ job.jobType }}</span>
+            <span>{{ job.salary }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="job-description-block">
+        <h2>About this role</h2>
+        <p>{{ job.description }}</p>
+      </div>
+
+      <div class="job-skills-block" *ngIf="job.skills?.length">
+        <h2>Skills and experience</h2>
+        <div class="skills">
+          <span class="skill" *ngFor="let skill of job.skills">{{ skill }}</span>
+        </div>
+      </div>
+    </article>
+
+    <aside class="apply-panel">
+      <span class="eyebrow">READY FOR YOUR NEXT MOVE?</span>
+      <h2>Apply for this role</h2>
+      <p>Upload your resume as a PDF to send your application to the recruiter.</p>
+
+      <label for="resume">Resume <span class="required-note">PDF only</span></label>
+      <input id="resume" type="file" accept="application/pdf" (change)="onFileSelected($event)">
+      <p *ngIf="selectedFile" class="selected-file">
+        Selected: <strong>{{ selectedFile.name }}</strong>
+      </p>
+
+      <button class="primary-button apply-button" (click)="applyForJob()" [disabled]="applying">
+        {{ applying ? 'Submitting application...' : 'Apply now' }}
+      </button>
+
+      <button
+        *ngIf="showMyApplicationsButton"
+        class="secondary-button apply-button"
+        (click)="viewMyApplications()"
+      >
+        View my applications
+      </button>
+    </aside>
+  </section>
+</main>

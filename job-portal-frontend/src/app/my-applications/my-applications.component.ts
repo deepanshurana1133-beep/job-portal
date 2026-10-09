@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-my-applications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './my-applications.component.html',
   styleUrl: './my-applications.component.css'
 })
@@ -13,6 +16,7 @@ export class MyApplicationsComponent implements OnInit {
 
   applications: any[] = [];
   errorMessage = '';
+  loading = true;
 
   constructor(private http: HttpClient) {}
 
@@ -25,11 +29,12 @@ export class MyApplicationsComponent implements OnInit {
 
     if (!token) {
       this.errorMessage = 'Please login first';
+      this.loading = false;
       return;
     }
 
     this.http.get<any[]>(
-      'http://localhost:3000/applications/my',
+      `${environment.apiUrl}/applications/my`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -37,13 +42,15 @@ export class MyApplicationsComponent implements OnInit {
       }
     ).subscribe({
       next: (response) => {
-        console.log('My Applications:', response);
         this.applications = response;
+        this.loading = false;
       },
       error: (error) => {
-        console.error('My Applications error:', error);
-        this.errorMessage =
-          error.error?.message || 'Applications load nahi ho pa rahi hain';
+        this.errorMessage = apiErrorMessage(
+          error,
+          'Unable to load your applications.',
+        );
+        this.loading = false;
       }
     });
   }

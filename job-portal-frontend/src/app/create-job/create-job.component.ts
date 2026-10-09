@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-create-job',
@@ -77,14 +79,12 @@ export class CreateJobComponent {
 
     this.http
       .post(
-        'http://localhost:3000/jobs',
+        `${environment.apiUrl}/jobs`,
         jobData,
         { headers }
       )
       .subscribe({
         next: (response) => {
-          console.log('Job created successfully:', response);
-
           this.loading = false;
           this.successMessage = 'Job created successfully!';
 
@@ -99,13 +99,9 @@ export class CreateJobComponent {
         },
 
         error: (error) => {
-          console.error('Create job error:', error);
-
           this.loading = false;
 
-          this.errorMessage =
-            error.error?.message ||
-            'Job create nahi ho paayi.';
+          this.errorMessage = apiErrorMessage(error, 'Unable to create the job.');
         }
       });
   }

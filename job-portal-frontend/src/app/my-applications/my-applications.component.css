@@ -1,32 +1,47 @@
 .applications-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+  width: min(100% - 40px, 930px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 48px 0 64px;
 }
 
-.applications-container h1 {
-  text-align: center;
-  margin-bottom: 30px;
-}
+.applications-list { display: grid; gap: 14px; }
 
 .application-card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 22px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(26, 46, 82, 0.04);
 }
 
-.application-card h2 {
-  margin-top: 0;
+.application-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #edf0f5;
 }
 
-.application-card p {
-  margin: 8px 0;
+.application-card-heading h2 { margin: 5px 0 0; font-size: 20px; }
+
+.application-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 52px;
+  padding: 17px 0 4px;
 }
 
-.error {
-  color: red;
-  text-align: center;
+.application-meta span { display: grid; gap: 3px; color: #53647e; font-size: 13px; }
+.application-meta strong { color: #8a96a8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.status-hint { margin: 12px 0 0; color: var(--color-muted); font-size: 13px; }
+.applications-container > .error-message { margin-bottom: 18px; }
+
+@media (max-width: 600px) {
+  .applications-container { width: min(100% - 32px, 930px); padding-top: 30px; }
+  .applications-page-header { align-items: flex-start; flex-direction: column; }
+  .application-card { padding: 18px; }
+  .application-card-heading { flex-direction: column; gap: 12px; }
+  .application-meta { gap: 14px 24px; }
 }

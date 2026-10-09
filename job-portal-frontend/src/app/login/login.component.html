@@ -1,65 +1,48 @@
-<div class="login-container">
-  <div class="login-box">
-
-    <h1>Job Portal</h1>
-    <h2>Login</h2>
-
-    <p class="login-subtitle">
-      Welcome back! Login to continue your job search.
-    </p>
+<main class="login-container">
+  <a class="auth-brand" routerLink="/welcome" aria-label="Job Portal home">
+    <span class="brand-mark" aria-hidden="true">J</span>
+    <span>Job Portal</span>
+  </a>
+  <section class="login-box">
+    <span class="auth-eyebrow">WELCOME BACK</span>
+    <h1>Sign in to your account</h1>
+    <p class="login-subtitle">Continue your job search and keep your applications moving.</p>
 
     <form (ngSubmit)="login()">
-
       <div class="form-group">
-        <label>Email</label>
-
+        <label for="login-email">Email address</label>
         <input
+          id="login-email"
           type="email"
           name="email"
           [(ngModel)]="email"
-          placeholder="Enter your email"
+          placeholder="you@example.com"
+          autocomplete="email"
           required
         />
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-
+        <label for="login-password">Password</label>
         <input
+          id="login-password"
           type="password"
           name="password"
           [(ngModel)]="password"
           placeholder="Enter your password"
+          autocomplete="current-password"
           required
         />
       </div>
 
-      <button type="submit">
-        Login
-      </button>
-
-      <p
-        *ngIf="errorMessage"
-        class="error"
-      >
-        {{ errorMessage }}
-      </p>
-
+      <p *ngIf="errorMessage" class="error" role="alert">{{ errorMessage }}</p>
+      <button type="submit" class="primary-button">Sign in</button>
     </form>
 
     <div class="register-section">
-
-      <p>New to Job Portal?</p>
-
-      <button
-        type="button"
-        class="register-btn"
-        (click)="goToRegister()"
-      >
-        Create an Account
-      </button>
-
+      <span>New to Job Portal?</span>
+      <button type="button" class="text-button" (click)="goToRegister()">Create an account</button>
     </div>
-
-  </div>
-</div>
+  </section>
+  <p class="auth-footer"><a routerLink="/jobs">Browse open jobs</a><span>·</span> Built for your next move</p>
+</main>
