@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsIn,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -18,6 +19,7 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @IsIn(['job_seeker', 'recruiter'])
-  role: string;
+  @IsOptional()
+  @IsIn(['job_seeker'])
+  role?: 'job_seeker';
 }

@@ -31,6 +31,43 @@
 $ npm install
 ```
 
+## Frontend origin and security headers
+
+Set `FRONTEND_URL` to the deployed Angular application's origin (for example,
+`https://jobs.example.com`). In production, the backend requires this setting
+and allows CORS only for that origin. In non-production environments,
+`http://localhost:4200` is also allowed for local Angular development.
+
+Helmet is enabled for standard HTTP security headers. For local development,
+`FRONTEND_URL` can be omitted.
+
+## Authentication and request protection
+
+Copy `.env.example` to `.env` and replace `JWT_SECRET` with a unique random
+value of at least 32 characters. The backend loads `.env` at startup and
+refuses to start if the secret is missing or too short. Keep `.env` out of
+version control and use the same environment variable in production.
+
+Set `EMAIL_USER` and `EMAIL_PASSWORD` in `.env` to the mail account credentials
+used for application status notifications. Do not commit real credentials.
+
+Request DTOs are transformed and validated globally; unknown properties are
+rejected. Requests are rate-limited to 120 per minute by default, with tighter
+limits on login and registration (5 per minute) and resume/application actions.
+The rate limiter uses in-memory storage, so multi-instance deployments should
+configure shared throttler storage.
+
+Unhandled server errors return a generic response; detailed exception messages
+and stacks are kept out of client responses. If a status notification email
+cannot be sent, the application status remains saved and the API still returns
+the saved application.
+
+Public registration creates `job_seeker` accounts only. Recruiter accounts
+must be provisioned through a trusted administrative process. Recruiter job
+and application access is enforced by the API and scoped to jobs owned by the
+authenticated recruiter; Angular route guards are not an authorization
+boundary.
+
 ## Compile and run the project
 
 ```bash

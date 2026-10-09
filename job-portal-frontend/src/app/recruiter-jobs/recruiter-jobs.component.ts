@@ -39,7 +39,7 @@ export class RecruiterJobsComponent implements OnInit {
     });
 
     this.http
-      .get<any[]>('http://localhost:3000/jobs', { headers })
+      .get<any[]>('http://localhost:3000/jobs/recruiter', { headers })
       .subscribe({
         next: (response) => {
           console.log('Jobs:', response);

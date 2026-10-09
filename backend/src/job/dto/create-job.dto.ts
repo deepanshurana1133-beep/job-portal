@@ -1,8 +1,4 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateJobDto {
   @IsString()
@@ -30,6 +26,6 @@ export class CreateJobDto {
   jobType: string;
 
   @IsArray()
+  @IsString({ each: true })
   skills: string[];
-
 }
