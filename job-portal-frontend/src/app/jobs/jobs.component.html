@@ -1,191 +1,45 @@
-<main class="jobs-page">
-  <nav class="topbar" aria-label="Main navigation">
-    <a class="brand" routerLink="/jobs" aria-label="Job Portal home">
-      <span class="brand-mark" aria-hidden="true">J</span>
-      <span>Job<span class="brand-accent">Portal</span></span>
-    </a>
-
-    <div class="nav-links">
-      <a
-        routerLink="/jobs"
-        [class.active]="!showingSavedJobs"
-        [attr.aria-current]="!showingSavedJobs ? 'page' : null"
-        (click)="showAllJobs()"
-      >Jobs</a>
-      <a routerLink="/my-applications" routerLinkActive="active">My Applications</a>
-      <button
-        type="button"
-        class="nav-link"
-        [class.active]="showingSavedJobs"
-        [attr.aria-pressed]="showingSavedJobs"
-        (click)="showSavedJobs()"
-      >
-        Saved Jobs
-        <span class="saved-count">{{ savedJobIds.size }}</span>
-      </button>
+<main class="jobs-container">
+  <header class="jobs-page-header">
+    <div>
+      <span class="eyebrow">EXPLORE OPPORTUNITIES</span>
+      <h1>Find your next role</h1>
+      <p>Discover roles from teams looking for people like you.</p>
     </div>
+    <button class="secondary-button" (click)="viewMyApplications()">My applications</button>
+  </header>
 
-    <div
-      class="profile-avatar"
-      [attr.aria-label]="userRole === 'recruiter' ? 'Recruiter profile' : 'Job seeker profile'"
-      [title]="userRole === 'recruiter' ? 'Recruiter' : 'Job seeker'"
-    >{{ userRole === 'recruiter' ? 'R' : 'J' }}</div>
-  </nav>
+  <div *ngIf="errorMessage" class="error-message" role="alert">{{ errorMessage }}</div>
 
-  <section class="content">
-    <header class="page-heading">
-      <p class="eyebrow">YOUR NEXT OPPORTUNITY</p>
-      <h1>{{ showingSavedJobs ? 'Saved jobs' : 'Find your next role' }}</h1>
-      <p class="subheading">Discover opportunities that match your experience and ambitions.</p>
-    </header>
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Finding opportunities...</span>
+  </div>
 
-    <section class="search-panel" aria-label="Search and filter jobs">
-      <label class="search-field">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="10.8" cy="10.8" r="6.8"></circle>
-          <path d="m16 16 4.2 4.2"></path>
-        </svg>
-        <span class="sr-only">Search by job title, company, or skill</span>
-        <input
-          type="search"
-          placeholder="Job title, company, or skill"
-          [(ngModel)]="searchTerm"
-        >
-      </label>
+  <section *ngIf="!loading && !errorMessage && jobs.length === 0" class="empty-state">
+    <span class="empty-icon" aria-hidden="true">⌕</span>
+    <h2>No open roles just yet</h2>
+    <p>Check back soon for new opportunities.</p>
+  </section>
 
-      <label class="filter-field">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"></path>
-          <circle cx="12" cy="10" r="2.2"></circle>
-        </svg>
-        <span class="sr-only">Filter by location</span>
-        <input
-          type="search"
-          placeholder="Location"
-          [(ngModel)]="locationTerm"
-        >
-      </label>
-
-      <label class="filter-field job-type-field">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3.5" y="7" width="17" height="13" rx="2"></rect>
-          <path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7M3.5 12h17M10 12v2h4v-2"></path>
-        </svg>
-        <span class="sr-only">Filter by job type</span>
-        <select [(ngModel)]="selectedJobType">
-          <option value="">All job types</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Remote">Remote</option>
-          <option value="Hybrid">Hybrid</option>
-        </select>
-      </label>
-    </section>
-
-    <div class="results-row">
-      <p><strong>{{ filteredJobs.length }}</strong> {{ filteredJobs.length === 1 ? 'opportunity' : 'opportunities' }}</p>
-      <button
-        *ngIf="searchTerm || locationTerm || selectedJobType"
-        type="button"
-        class="clear-filters"
-        (click)="clearFilters()"
-      >Clear filters</button>
-    </div>
-
-    <p *ngIf="errorMessage" class="notice error-notice" role="alert">
-      {{ errorMessage }}
-    </p>
-
-    <div *ngIf="loading" class="notice loading-notice" role="status">
-      <span class="loading-dot" aria-hidden="true"></span>
-      Finding the latest opportunities...
-    </div>
-
-    <section *ngIf="!loading && filteredJobs.length" class="jobs-grid" aria-label="Job listings">
-      <article class="job-card" *ngFor="let job of filteredJobs">
-        <div class="card-topline">
-          <div class="company-avatar" aria-hidden="true">
-            {{ job.company ? job.company.charAt(0).toUpperCase() : 'C' }}
-          </div>
-          <div class="company-details">
-            <p class="company-name">{{ job.company }}</p>
-            <span class="location">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"></path>
-                <circle cx="12" cy="10" r="2.2"></circle>
-              </svg>
-              {{ job.location }}
-            </span>
-          </div>
-          <button
-            type="button"
-            class="save-button"
-            [class.is-saved]="job.isSaved"
-            [attr.aria-label]="job.isSaved ? 'Remove saved job' : 'Save job'"
-            [attr.aria-pressed]="job.isSaved"
-            [title]="job.isSaved ? 'Remove saved job' : 'Save job'"
-            (click)="toggleSave(job.id)"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20.8 8.8c0 4.2-8.8 10-8.8 10s-8.8-5.8-8.8-10A4.6 4.6 0 0 1 12 6.1a4.6 4.6 0 0 1 8.8 2.7Z"></path>
-            </svg>
-          </button>
-        </div>
-
-        <div class="urgency-tags" *ngIf="job.urgencyTag">
-          <span
-            class="urgency-tag"
-            [class.urgent-tag]="job.urgencyTag === 'Urgent Opening'"
-          >{{ job.urgencyTag === 'Urgent Opening' ? 'Urgent' : 'Actively Hiring' }}</span>
-        </div>
-
-        <div class="job-content">
-          <h2>{{ job.title }}</h2>
-
-          <div class="job-meta">
-            <span class="salary-badge">{{ job.salary }}</span>
-            <span class="job-type-pill">{{ job.jobType }}</span>
-            <time *ngIf="job.postedDate" class="posted-date" [attr.datetime]="job.postedDate">
-              {{ job.postedDate | date:'mediumDate' }}
-            </time>
-          </div>
-
-          <p class="description">{{ job.description }}</p>
-
-          <ul class="skills-list" *ngIf="job.skills?.length">
-            <li *ngFor="let skill of job.skills">#{{ skill }}</li>
-          </ul>
-        </div>
-
-        <footer class="card-footer">
-          <button type="button" class="view-button" (click)="viewJob(job._id)">
-            View &amp; Apply
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14m-6-6 6 6-6 6"></path>
-            </svg>
-          </button>
-        </footer>
-      </article>
-    </section>
-
-    <section
-      *ngIf="!loading && !filteredJobs.length && !errorMessage"
-      class="empty-state"
-      aria-live="polite"
-    >
-      <div class="empty-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <circle cx="10.8" cy="10.8" r="6.8"></circle>
-          <path d="m16 16 4.2 4.2"></path>
-        </svg>
+  <section *ngIf="!loading && jobs.length > 0" class="jobs-grid" aria-label="Available jobs">
+    <article class="job-card" *ngFor="let job of jobs">
+      <div class="job-card-top">
+        <span class="company-mark" aria-hidden="true">{{ (job.company || 'C').charAt(0) }}</span>
+        <span class="job-type">{{ job.jobType || 'Position' }}</span>
       </div>
-      <h2>{{ showingSavedJobs ? 'No saved jobs yet' : 'No matching jobs found' }}</h2>
-      <p>{{ showingSavedJobs ? 'Save interesting roles to keep them close at hand.' : 'Try adjusting your search or filters to see more opportunities.' }}</p>
-      <button *ngIf="showingSavedJobs" type="button" class="empty-action" (click)="showAllJobs()">
-        Browse all jobs
+      <h2>{{ job.title }}</h2>
+      <p class="job-company">{{ job.company }}</p>
+      <div class="job-meta">
+        <span><span aria-hidden="true">⌖</span> {{ job.location }}</span>
+        <span><span aria-hidden="true">◷</span> {{ job.salary }}</span>
+      </div>
+      <p class="job-description">{{ job.description }}</p>
+      <div class="skills" *ngIf="job.skills?.length">
+        <span class="skill" *ngFor="let skill of job.skills">{{ skill }}</span>
+      </div>
+      <button class="primary-button job-card-action" (click)="viewJob(job._id)">
+        View role <span aria-hidden="true">→</span>
       </button>
-      <button *ngIf="!showingSavedJobs && (searchTerm || locationTerm || selectedJobType)" type="button" class="empty-action" (click)="clearFilters()">
-        Clear filters
-      </button>
-    </section>
+    </article>
   </section>
 </main>

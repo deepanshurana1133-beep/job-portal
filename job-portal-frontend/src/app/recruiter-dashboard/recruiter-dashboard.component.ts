@@ -27,6 +27,7 @@ export class RecruiterDashboardComponent {
 
   logout() {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('userRole');
     this.router.navigate(['/login']);
   }
 }

@@ -33,11 +33,12 @@
           },
           "configurations": {
             "production": {
-              "optimization": {
-                "fonts": {
-                  "inline": false
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
-              },
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -46,8 +47,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "12kB"
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
                 }
               ],
               "outputHashing": "all"

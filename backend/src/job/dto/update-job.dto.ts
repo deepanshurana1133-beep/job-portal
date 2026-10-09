@@ -1,47 +1,53 @@
 import {
-  IsArray,
-  IsNotEmpty,
-  IsString,
   ArrayMaxSize,
+  IsArray,
+  IsOptional,
+  IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
-export class CreateJobDto {
+export class UpdateJobDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(1)
   @MaxLength(120)
-  title: string;
+  title?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(1)
   @MaxLength(120)
-  company: string;
+  company?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(1)
   @MaxLength(120)
-  location: string;
+  location?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MinLength(20)
   @MaxLength(10000)
-  description: string;
+  description?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(1)
   @MaxLength(100)
-  salary: string;
+  salary?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(1)
   @MaxLength(60)
-  jobType: string;
+  jobType?: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayMaxSize(30)
   @IsString({ each: true })
   @MaxLength(60, { each: true })
-  skills: string[];
+  skills?: string[];
 }

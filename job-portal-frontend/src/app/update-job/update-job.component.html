@@ -1,6 +1,12 @@
 <div class="update-job-container">
 
+  <button type="button" class="back-btn" (click)="backToJobs()">← Back to my jobs</button>
   <h1>Update Job</h1>
+
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Loading job details...</span>
+  </div>
 
   <p *ngIf="message" class="success">
     {{ message }}
@@ -10,57 +16,64 @@
     {{ errorMessage }}
   </p>
 
-  <form (ngSubmit)="updateJob()">
+  <form *ngIf="!loading && !errorMessage" (ngSubmit)="updateJob()">
 
-    <label>Job Title</label>
+    <label for="update-title">Job title</label>
     <input
+      id="update-title"
       type="text"
       name="title"
       [(ngModel)]="job.title"
       required
     >
 
-    <label>Company</label>
+    <label for="update-company">Company</label>
     <input
+      id="update-company"
       type="text"
       name="company"
       [(ngModel)]="job.company"
       required
     >
 
-    <label>Location</label>
+    <label for="update-location">Location</label>
     <input
+      id="update-location"
       type="text"
       name="location"
       [(ngModel)]="job.location"
       required
     >
 
-    <label>Salary</label>
+    <label for="update-salary">Salary</label>
     <input
+      id="update-salary"
       type="text"
       name="salary"
       [(ngModel)]="job.salary"
       required
     >
 
-    <label>Job Type</label>
+    <label for="update-job-type">Job type</label>
     <input
+      id="update-job-type"
       type="text"
       name="jobType"
       [(ngModel)]="job.jobType"
       required
     >
 
-    <label>Description</label>
+    <label for="update-description">Description</label>
     <textarea
+      id="update-description"
       name="description"
       [(ngModel)]="job.description"
       required
     ></textarea>
 
-    <label>Skills</label>
+    <label for="update-skills">Skills</label>
     <input
+      id="update-skills"
       type="text"
       name="skills"
       [(ngModel)]="job.skills"
@@ -68,8 +81,8 @@
       required
     >
 
-    <button type="submit">
-      Update Job
+    <button type="submit" [disabled]="saving">
+      {{ saving ? 'Saving changes...' : 'Update Job' }}
     </button>
 
   </form>

@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -6,11 +8,13 @@ import {
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { Job, JobDocument } from '../job/schemas/job.schema';
 
 import {
   Application,
   ApplicationDocument,
 } from './schemas/application.schema';
+import { User } from '../user/schemas/user.schema';
 
 import { Response } from 'express';
 import * as path from 'path';
@@ -24,6 +28,9 @@ export class ApplicationService {
     @InjectModel(Application.name)
     private applicationModel: Model<ApplicationDocument>,
 
+    @InjectModel(Job.name)
+    private jobModel: Model<JobDocument>,
+
     private emailService: EmailService,
   ) {}
 
@@ -35,6 +42,15 @@ export class ApplicationService {
     userId: string,
     resume: string,
   ) {
+    if (!Types.ObjectId.isValid(jobId)) {
+      throw new BadRequestException('Invalid job ID');
+    }
+
+    const jobExists = await this.jobModel.exists({ _id: jobId });
+    if (!jobExists) {
+      throw new NotFoundException('Job not found');
+    }
+
     const application = new this.applicationModel({
       jobId: new Types.ObjectId(jobId),
       userId: new Types.ObjectId(userId),
@@ -42,7 +58,19 @@ export class ApplicationService {
       status: 'Pending',
     });
 
-    return application.save();
+    try {
+      return await application.save();
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 11000
+      ) {
+        throw new ConflictException('You have already applied for this job');
+      }
+      throw error;
+    }
   }
 
   // =========================
@@ -53,7 +81,7 @@ export class ApplicationService {
       .find({
         userId: new Types.ObjectId(userId),
       })
-      .populate('jobId')
+      .populate('jobId', 'title company location salary jobType skills description')
       .exec();
   }
 
@@ -64,13 +92,17 @@ export class ApplicationService {
     id: string,
     userId: string,
   ) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid application ID');
+    }
+
     const application = await this.applicationModel
       .findOne({
         _id: id,
         userId: new Types.ObjectId(userId),
       })
-      .populate('jobId')
-      .populate('userId')
+      .populate('jobId', 'title company location salary jobType skills description')
+      .populate('userId', 'name email')
       .exec();
 
     if (!application) {
@@ -87,10 +119,20 @@ export class ApplicationService {
   // =========================
   async updateStatus(
     id: string,
-    status: 'Pending' | 'Accepted' | 'Rejected',
+    status: 'Accepted' | 'Rejected',
     userId: string,
     role: string,
   ) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid application ID');
+    }
+
+    if (status !== 'Accepted' && status !== 'Rejected') {
+      throw new BadRequestException(
+        'Application status must be Accepted or Rejected',
+      );
+    }
+
     // Only recruiter can update status
     if (role !== 'recruiter') {
       throw new UnauthorizedException(
@@ -100,8 +142,8 @@ export class ApplicationService {
 
     const application = await this.applicationModel
       .findById(id)
-      .populate('jobId')
-      .populate('userId')
+      .populate<{ jobId: Job }>('jobId')
+      .populate<{ userId: User }>('userId', 'email')
       .exec();
 
     if (!application) {
@@ -110,7 +152,10 @@ export class ApplicationService {
       );
     }
 
-    const job = application.jobId as any;
+    const job = application.jobId;
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
 
     // Recruiter can update only their own job applications
     if (job.recruiterId.toString() !== userId) {
@@ -126,38 +171,37 @@ export class ApplicationService {
     const savedApplication =
       await application.save();
 
-    const user = application.userId as any;
+    const applicant = application.userId;
+    let emailSent = false;
 
     // =========================
     // Send Email Notification
     // =========================
-    if (
-      (status === 'Accepted' ||
-        status === 'Rejected') &&
-      user?.email &&
-      job?.title
-    ) {
+    if (applicant?.email && job.title) {
       try {
         await this.emailService.sendApplicationStatusEmail(
-          user.email,
+          applicant.email,
           job.title,
           status,
         );
 
-        console.log(
-          `Status email sent to ${user.email}`,
-        );
+        emailSent = true;
       } catch (error) {
-        // Email failure should NOT cause 500 error
         console.error(
-          'Email notification failed:',
-          error,
+          'Email notification failed',
+          error instanceof Error ? error.name : 'Unknown error',
         );
       }
+    } else {
+      console.error(
+        'Email notification failed: applicant email or job title is unavailable',
+      );
     }
 
-    // Always return saved application
-    return savedApplication;
+    return {
+      ...savedApplication.toObject({ depopulate: true }),
+      emailSent,
+    };
   }
 
   // =========================
@@ -179,7 +223,7 @@ export class ApplicationService {
         })
         .populate({
           path: 'userId',
-          select: '-password',
+          select: 'name email',
         });
 
     return applications.filter(
@@ -197,6 +241,10 @@ export class ApplicationService {
     role: string,
     res: Response,
   ) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid application ID');
+    }
+
     const application =
       await this.applicationModel
         .findById(id)
@@ -209,7 +257,10 @@ export class ApplicationService {
       );
     }
 
-    const job = application.jobId as any;
+    const job = application.jobId as unknown as Job | null;
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
 
     // Recruiter can view only applications
     // for their own jobs
@@ -222,12 +273,28 @@ export class ApplicationService {
       );
     }
 
-    const filePath = path.join(
+    const isGeneratedFilename =
+      /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.pdf$/i.test(
+        application.resume,
+      );
+    const isLegacyFilename =
+        /^\d+-[^/\\\u0000-\u001f<>:"|?*]+\.pdf$/i.test(application.resume);
+    if (
+      path.basename(application.resume) !== application.resume ||
+      (!isGeneratedFilename && !isLegacyFilename)
+    ) {
+      throw new NotFoundException('Resume file not found');
+    }
+
+    const uploadDirectory = path.resolve(
       process.cwd(),
       'uploads',
       'resumes',
-      application.resume,
     );
+    const filePath = path.resolve(uploadDirectory, application.resume);
+    if (path.dirname(filePath) !== uploadDirectory) {
+      throw new NotFoundException('Resume file not found');
+    }
 
     if (!fs.existsSync(filePath)) {
       throw new NotFoundException(

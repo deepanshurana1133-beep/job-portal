@@ -14,6 +14,8 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+The development API URL is configured in `src/environments/environment.ts`. Production builds use `/api`; configure the production reverse proxy to forward that prefix to the backend while preserving the backend's existing endpoint paths.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).

@@ -6,20 +6,30 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { JobModule } from './job/job.module';
 import { ApplicationModule } from './application/application.module';
-import 'dotenv/config';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      process.env.MONGODB_URI ??
-        'mongodb://127.0.0.1:27017/job_portal',
-    ),
+    MongooseModule.forRoot(process.env.MONGODB_URI ?? ''),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60_000,
+        limit: 100,
+      },
+    ]),
     UserModule,
     AuthModule,
     JobModule,
     ApplicationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

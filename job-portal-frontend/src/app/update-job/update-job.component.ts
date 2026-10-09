@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-update-job',
@@ -28,6 +29,8 @@ export class UpdateJobComponent implements OnInit {
 
   message = '';
   errorMessage = '';
+  loading = true;
+  saving = false;
 
   constructor(
     private http: HttpClient,
@@ -41,6 +44,7 @@ export class UpdateJobComponent implements OnInit {
 
     if (!this.jobId) {
       this.errorMessage = 'Job ID not found';
+      this.loading = false;
       return;
     }
 
@@ -54,8 +58,6 @@ export class UpdateJobComponent implements OnInit {
     ).subscribe({
       next: (response) => {
 
-        console.log('Job Details:', response);
-
         this.job = {
           title: response.title || '',
           company: response.company || '',
@@ -67,11 +69,12 @@ export class UpdateJobComponent implements OnInit {
             ? response.skills.join(', ')
             : ''
         };
+        this.loading = false;
       },
 
       error: (error) => {
-        console.error('Get Job error:', error);
-        this.errorMessage = 'Job load nahi ho pa rahi hai';
+        this.loading = false;
+        this.errorMessage = apiErrorMessage(error, 'Unable to load the job.');
       }
     });
   }
@@ -82,6 +85,9 @@ export class UpdateJobComponent implements OnInit {
 
     if (!token) {
       this.errorMessage = 'Please login first';
+      return;
+    }
+    if (this.saving) {
       return;
     }
 
@@ -102,6 +108,7 @@ export class UpdateJobComponent implements OnInit {
         .filter(skill => skill !== '')
     };
 
+    this.saving = true;
     this.http.patch(
       `${environment.apiUrl}/jobs/${this.jobId}`,
       jobData,
@@ -109,20 +116,22 @@ export class UpdateJobComponent implements OnInit {
     ).subscribe({
       next: (response) => {
 
-        console.log('Job updated successfully:', response);
-
         this.message = 'Job updated successfully!';
         this.errorMessage = '';
+        this.saving = false;
       },
 
       error: (error) => {
 
-        console.error('Update Job error:', error);
-
-        this.errorMessage = 'Job update nahi ho pa rahi hai';
+        this.errorMessage = apiErrorMessage(error, 'Unable to update the job.');
         this.message = '';
+        this.saving = false;
       }
     });
+  }
+
+  backToJobs(): void {
+    this.router.navigate(['/recruiter-jobs']);
   }
 
 }

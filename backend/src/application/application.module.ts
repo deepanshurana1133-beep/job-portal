@@ -8,6 +8,7 @@ import {
   Application,
   ApplicationSchema,
 } from './schemas/application.schema';
+import { Job, JobSchema } from '../job/schemas/job.schema';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import {
       {
         name: Application.name,
         schema: ApplicationSchema,
+      },
+      {
+        name: Job.name,
+        schema: JobSchema,
       },
     ]),
     EmailModule,

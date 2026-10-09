@@ -12,9 +12,15 @@ import {
 
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
+import { UpdateJobDto } from './dto/update-job.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import type { Request } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  user: { userId: string };
+}
 
 @Controller('jobs')
 export class JobController {
@@ -27,7 +33,7 @@ export class JobController {
   @Roles('recruiter')
   createJob(
     @Body() createJobDto: CreateJobDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.jobService.createJob(
       createJobDto,
@@ -38,6 +44,13 @@ export class JobController {
   @Get()
   getAllJobs() {
     return this.jobService.getAllJobs();
+  }
+
+  @Get('recruiter')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('recruiter')
+  getRecruiterJobs(@Req() req: { user: { userId: string } }) {
+    return this.jobService.getRecruiterJobs(req.user.userId);
   }
 
   @Get(':id')
@@ -52,10 +65,12 @@ export class JobController {
   @Roles('recruiter')
   updateJob(
     @Param('id') id: string,
-    @Body() updateJobDto: any,
+    @Body() updateJobDto: UpdateJobDto,
+    @Req() req: { user: { userId: string } },
   ) {
     return this.jobService.updateJob(
       id,
+      req.user.userId,
       updateJobDto,
     );
   }
@@ -65,7 +80,8 @@ export class JobController {
   @Roles('recruiter')
   deleteJob(
     @Param('id') id: string,
+    @Req() req: { user: { userId: string } },
   ) {
-    return this.jobService.deleteJob(id);
+    return this.jobService.deleteJob(id, req.user.userId);
   }
 }

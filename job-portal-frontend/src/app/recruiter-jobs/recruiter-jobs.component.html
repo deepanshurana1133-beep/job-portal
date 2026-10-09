@@ -3,6 +3,7 @@
   <div class="page-header">
 
     <div>
+      <span class="eyebrow">RECRUITER WORKSPACE</span>
       <h1>My Jobs</h1>
       <p>Manage the jobs you have posted</p>
     </div>
@@ -25,11 +26,12 @@
 
   </div>
 
-  <div *ngIf="loading" class="loading">
-    Loading jobs...
+  <div *ngIf="loading" class="loading-state" role="status">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Loading your jobs...</span>
   </div>
 
-  <div *ngIf="errorMessage" class="error-message">
+  <div *ngIf="errorMessage" class="error-message" role="alert">
     {{ errorMessage }}
   </div>
 
@@ -66,29 +68,14 @@
         </span>
       </div>
 
-      <p>
-        <strong>Company:</strong>
-        {{ job.company }}
-      </p>
-
-      <p>
-        <strong>Location:</strong>
-        {{ job.location }}
-      </p>
-
-      <p>
-        <strong>Salary:</strong>
-        {{ job.salary }}
-      </p>
-
-      <p>
-        <strong>Description:</strong>
-        {{ job.description }}
-      </p>
+      <p class="job-company">{{ job.company }}</p>
+      <div class="job-meta">
+        <span>{{ job.location }}</span>
+        <span>{{ job.salary }}</span>
+      </div>
+      <p class="job-description">{{ job.description }}</p>
 
       <div class="skills">
-        <strong>Skills:</strong>
-
         <span
           *ngFor="let skill of job.skills"
           class="skill"
@@ -98,6 +85,13 @@
       </div>
 
       <div class="job-actions">
+
+        <button
+          class="edit-btn"
+          (click)="editJob(job._id)"
+        >
+          Edit
+        </button>
 
         <button
           class="delete-btn"

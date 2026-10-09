@@ -2,15 +2,17 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -50,6 +52,11 @@ export class RegisterComponent {
       return;
     }
 
+    if (this.password.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters.';
+      return;
+    }
+
     const registerData = {
       name: this.name,
       email: this.email,
@@ -65,8 +72,6 @@ export class RegisterComponent {
       .subscribe({
         next: (response) => {
 
-          console.log('Registration successful:', response);
-
           this.successMessage =
             'Account created successfully! Redirecting to login...';
 
@@ -76,12 +81,10 @@ export class RegisterComponent {
         },
 
         error: (error) => {
-
-          console.error('Registration error:', error);
-
-          this.errorMessage =
-            error.error?.message ||
-            'Registration failed. Please try again.';
+          this.errorMessage = apiErrorMessage(
+            error,
+            'Registration failed. Please try again.',
+          );
         }
       });
   }

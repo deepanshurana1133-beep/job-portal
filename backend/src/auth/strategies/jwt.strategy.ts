@@ -1,11 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-const jwtSecret = process.env.JWT_SECRET ?? '';
-if (!jwtSecret) {
-  throw new Error('JWT_SECRET must be configured in backend/.env');
-}
+import { Types } from 'mongoose';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +9,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtSecret,
+      secretOrKey: process.env.JWT_SECRET ?? '',
     });
   }
 
@@ -22,6 +18,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     email: string;
     role: string;
   }) {
+    if (
+      !Types.ObjectId.isValid(payload.sub) ||
+      !['job_seeker', 'recruiter'].includes(payload.role) ||
+      typeof payload.email !== 'string'
+    ) {
+      throw new UnauthorizedException('Invalid access token');
+    }
+
     return {
       userId: payload.sub,
       email: payload.email,

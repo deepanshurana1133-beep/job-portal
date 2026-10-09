@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-recruiter-applications',
@@ -18,6 +19,7 @@ export class RecruiterApplicationsComponent implements OnInit {
   loading = true;
   errorMessage = '';
   successMessage = '';
+  updatingApplicationId: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -48,18 +50,15 @@ export class RecruiterApplicationsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          console.log('Recruiter Applications:', response);
-
           this.applications = response;
           this.loading = false;
         },
 
         error: (error) => {
-          console.error('Applications error:', error);
-
-          this.errorMessage =
-            error.error?.message ||
-            'Applications load nahi ho pa rahi hain.';
+          this.errorMessage = apiErrorMessage(
+            error,
+            'Unable to load applications.',
+          );
 
           this.loading = false;
         }
@@ -71,10 +70,16 @@ export class RecruiterApplicationsComponent implements OnInit {
     status: 'Accepted' | 'Rejected'
   ): void {
 
+    this.errorMessage = '';
+    this.successMessage = '';
+
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
       this.errorMessage = 'Please login first.';
+      return;
+    }
+    if (this.updatingApplicationId) {
       return;
     }
 
@@ -86,28 +91,31 @@ export class RecruiterApplicationsComponent implements OnInit {
       status: status
     };
 
+    this.updatingApplicationId = applicationId;
+
     this.http
-      .patch(
+      .patch<{ emailSent: boolean }>(
         `${environment.apiUrl}/applications/${applicationId}/status`,
         body,
         { headers }
       )
       .subscribe({
-        next: () => {
+        next: (response) => {
 
-          this.successMessage =
-            `Application ${status.toLowerCase()} successfully.`;
+          this.successMessage = response.emailSent
+            ? `Application ${status.toLowerCase()} successfully, and the applicant was notified by email.`
+            : `Application ${status.toLowerCase()} successfully, but the applicant notification email could not be sent.`;
 
+          this.updatingApplicationId = null;
           this.getApplications();
         },
 
         error: (error) => {
-
-          console.error('Status update error:', error);
-
-          this.errorMessage =
-            error.error?.message ||
-            'Application status update nahi ho paaya.';
+          this.errorMessage = apiErrorMessage(
+            error,
+            'Unable to update the application status.',
+          );
+          this.updatingApplicationId = null;
         }
       });
   }
@@ -145,9 +153,6 @@ export class RecruiterApplicationsComponent implements OnInit {
         },
 
         error: (error) => {
-
-          console.error('Resume error:', error);
-
           this.errorMessage =
             'Resume open nahi ho pa raha hai.';
         }

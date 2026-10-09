@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { apiErrorMessage } from '../api-error-message';
 
 @Component({
   selector: 'app-recruiter-jobs',
@@ -40,17 +41,14 @@ export class RecruiterJobsComponent implements OnInit {
     });
 
     this.http
-      .get<any[]>(`${environment.apiUrl}/jobs`, { headers })
+      .get<any[]>(`${environment.apiUrl}/jobs/recruiter`, { headers })
       .subscribe({
         next: (response) => {
-          console.log('Jobs:', response);
           this.jobs = response;
           this.loading = false;
         },
         error: (error) => {
-          console.error('Jobs error:', error);
-          this.errorMessage =
-            error.error?.message || 'Jobs load nahi ho pa rahi hain.';
+          this.errorMessage = apiErrorMessage(error, 'Unable to load your jobs.');
           this.loading = false;
         }
       });
@@ -58,6 +56,10 @@ export class RecruiterJobsComponent implements OnInit {
 
   createJob(): void {
     this.router.navigate(['/create-job']);
+  }
+
+  editJob(jobId: string): void {
+    this.router.navigate(['/update-job', jobId]);
   }
 
   backToDashboard(): void {
@@ -92,9 +94,7 @@ export class RecruiterJobsComponent implements OnInit {
           this.getJobs();
         },
         error: (error) => {
-          console.error('Delete job error:', error);
-          this.errorMessage =
-            error.error?.message || 'Job delete nahi ho paayi.';
+          this.errorMessage = apiErrorMessage(error, 'Unable to delete the job.');
         }
       });
   }

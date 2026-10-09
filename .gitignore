@@ -4,7 +4,7 @@ node_modules/
 # Environment files
 .env
 .env.*
-!backend/.env.example
+!.env.example
 
 # Angular build
 dist/

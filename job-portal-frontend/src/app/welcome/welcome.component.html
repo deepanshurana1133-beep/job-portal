@@ -1,29 +1,52 @@
-<div class="welcome-container">
+<main class="welcome-container">
+  <header class="welcome-nav">
+    <a class="brand" routerLink="/welcome" aria-label="Job Portal home">
+      <span class="brand-mark" aria-hidden="true">J</span>
+      <span>Job Portal</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a routerLink="/jobs">Browse jobs</a>
+      <a routerLink="/login">Sign in</a>
+    </nav>
+  </header>
 
-  <div class="welcome-card">
-
-    <div class="career-icon">
-      💼
+  <section class="welcome-content">
+    <div class="welcome-copy">
+      <span class="eyebrow"><span aria-hidden="true"></span> YOUR NEXT CHAPTER STARTS HERE</span>
+      <h1>Find work that<br><span>moves you forward.</span></h1>
+      <p class="subtitle">
+        Discover opportunities that match your skills, ambitions and the way you want to work.
+        Your next great role is closer than you think.
+      </p>
+      <div class="welcome-actions">
+        <button class="get-started-btn" (click)="getStarted()">
+          Get started <span aria-hidden="true">→</span>
+        </button>
+        <a class="browse-link" routerLink="/jobs">Explore open jobs</a>
+      </div>
+      <div class="welcome-note">
+        <span class="note-mark" aria-hidden="true">✓</span>
+        A simpler, more focused way to find your next opportunity
+      </div>
     </div>
 
-    <h1>
-      Welcome to
-      <span>Job Portal</span>
-    </h1>
-
-    <p class="subtitle">
-      Find the right job and take the next step
-      in your career.
-    </p>
-
-    <button
-      class="get-started-btn"
-      (click)="getStarted()"
-    >
-      Get Started
-      <span>→</span>
-    </button>
-
-  </div>
-
-</div>
+    <aside class="welcome-card" aria-label="Job search highlights">
+      <div class="card-topline">
+        <span class="card-icon" aria-hidden="true">✦</span>
+        <span>Make your next move</span>
+      </div>
+      <div class="orbit-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="orbit-core"><span>J</span></div>
+        <span class="orbit-dot dot-one"></span>
+        <span class="orbit-dot dot-two"></span>
+        <span class="orbit-dot dot-three"></span>
+      </div>
+      <div class="card-caption">
+        <strong>Find the right fit</strong>
+        <span>Meaningful work begins with the right opportunity.</span>
+      </div>
+    </aside>
+  </section>
+</main>
