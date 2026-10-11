@@ -10,7 +10,8 @@ Copy-Item backend\.env.example backend\.env
 Set `JWT_SECRET` and, when email notifications are needed, `EMAIL_USER` and
 `EMAIL_PASSWORD` in `backend\.env`. The default MongoDB URI is
 `mongodb://127.0.0.1:27017/job_portal`; make sure MongoDB is running locally.
-The frontend uses `http://localhost:3000` as its backend API URL by default.
+The frontend uses `https://job-portal-tau-flax.vercel.app` as its backend API
+URL in development and production builds.
 
 Start both applications from the repository root:
 

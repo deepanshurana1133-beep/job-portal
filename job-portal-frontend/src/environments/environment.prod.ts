@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: '/api',
+  apiUrl: 'https://job-portal-tau-flax.vercel.app',
 };
