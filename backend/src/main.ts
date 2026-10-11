@@ -1,12 +1,12 @@
 import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 
-async function bootstrap() {
+export async function createApp(): Promise<NestExpressApplication> {
   const jwtSecret = process.env.JWT_SECRET;
   if (
     !jwtSecret ||
@@ -35,7 +35,7 @@ async function bootstrap() {
     throw new Error('FRONTEND_URL must be configured in production');
   }
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(helmet());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
@@ -65,6 +65,12 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
+  await app.init();
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
   const configuredPort = process.env.PORT ? Number(process.env.PORT) : 3000;
   if (
     !Number.isInteger(configuredPort) ||
@@ -77,4 +83,6 @@ async function bootstrap() {
   await app.listen(configuredPort);
 }
 
-void bootstrap();
+if (require.main === module) {
+  void bootstrap();
+}

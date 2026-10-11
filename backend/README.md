@@ -65,7 +65,21 @@ $ npm run test:cov
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Deploy to Vercel
+
+The Vercel function entry is `index.ts`; it initializes the Nest application once per function instance and forwards all request paths to its Express adapter. The normal `npm run start` and `npm run start:dev` commands continue to run the local HTTP server.
+
+1. Push the repository to GitHub.
+2. In Vercel, import the GitHub repository and set **Root Directory** to `backend`.
+3. Leave the framework preset as **Other**. Vercel uses the included `vercel.json` and `backend/package.json`.
+4. Add these environment variables in the Vercel project settings:
+   - `MONGODB_URI`: a production MongoDB connection string reachable from Vercel.
+   - `JWT_SECRET`: a unique secret of at least 32 characters.
+   - `FRONTEND_URL`: the deployed frontend's origin, without a trailing path. For multiple trusted origins, use `CORS_ORIGINS` as a comma-separated list instead.
+   - `EMAIL_USER` and `EMAIL_PASSWORD`, together, if email notifications are enabled.
+5. Deploy. Pushes to the connected GitHub branch will trigger subsequent deployments.
+
+Never commit `.env`, uploaded resumes, or production credentials. For local development and production deployment guidance, see the [NestJS deployment documentation](https://docs.nestjs.com/deployment).
 
 If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
