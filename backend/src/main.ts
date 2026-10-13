@@ -27,14 +27,6 @@ export async function createApp(): Promise<NestExpressApplication> {
     throw new Error('EMAIL_USER and EMAIL_PASSWORD must be configured together');
   }
 
-  if (
-    process.env.NODE_ENV === 'production' &&
-    !process.env.FRONTEND_URL &&
-    !process.env.CORS_ORIGINS
-  ) {
-    throw new Error('FRONTEND_URL must be configured in production');
-  }
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(helmet());
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -46,23 +38,11 @@ export async function createApp(): Promise<NestExpressApplication> {
     }),
   );
 
-  const allowedOrigins = (
-    process.env.FRONTEND_URL ??
-    process.env.CORS_ORIGINS ??
-    'http://localhost:4200'
-  )
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-  if (allowedOrigins.includes('*')) {
-    throw new Error('CORS_ORIGINS must not include a wildcard');
-  }
-
   app.enableCors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   await app.init();
