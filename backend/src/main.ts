@@ -6,7 +6,18 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 
-export async function createApp(): Promise<NestExpressApplication> {
+type CorsOptions = Parameters<NestExpressApplication['enableCors']>[0];
+
+const defaultCorsOptions: CorsOptions = {
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true,
+};
+
+export async function createApp(
+  corsOptions: CorsOptions = defaultCorsOptions,
+): Promise<NestExpressApplication> {
   const jwtSecret = process.env.JWT_SECRET;
   if (
     !jwtSecret ||
@@ -38,12 +49,7 @@ export async function createApp(): Promise<NestExpressApplication> {
     }),
   );
 
-  app.enableCors({
-    origin: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true,
-  });
+  app.enableCors(corsOptions);
 
   await app.init();
   return app;
