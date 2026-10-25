@@ -67,7 +67,7 @@ $ npm run test:cov
 
 ### Deploy to Vercel
 
-The Vercel function entry is `index.ts`; it initializes the Nest application once per function instance and forwards all request paths to its Express adapter. The normal `npm run start` and `npm run start:dev` commands continue to run the local HTTP server.
+The Vercel function entry is `api/index.ts`; it initializes the Nest application once per function instance and forwards all request paths and HTTP methods to its Express adapter. CORS is configured in the shared Nest bootstrap, so preflight `OPTIONS` requests are handled there as well. The normal `npm run start` and `npm run start:dev` commands continue to run the local HTTP server.
 
 1. Push the repository to GitHub.
 2. In Vercel, import the GitHub repository and set **Root Directory** to `backend`.
